@@ -5,8 +5,36 @@ $livros = $this->view->livros ?? [];
 $busca = $this->view->busca ?? '';
 ?>
 
+<style>
+    .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
+    .btn-ink:hover{ background:var(--ink-3); border-color:var(--ink-3); color:#fff; }
+    .btn-line{ border:1px solid rgba(0,0,0,.14); color:var(--text); background:rgba(0,0,0,.04); transition:background .15s, border-color .15s; }
+    .btn-line:hover{ background:rgba(0,0,0,.09); border-color:rgba(0,0,0,.22); color:var(--text); }
+    .btn-brick{ background:var(--brick); color:#fff; border:1px solid var(--brick); }
+    .btn-brick:hover{ background:#73372A; border-color:#73372A; }
+    .ring-icon{ border:1.5px solid var(--brass, #9A7A35); color:#6E5522; background:rgba(255,255,255,.65); }
+    .ring-icon-brick{ border:1.5px solid var(--brick, #8C4432); color:var(--brick, #8C4432); background:rgba(140,68,50,.08); }
+    .tag{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .65rem; border-radius:3px; font-size:.72rem; font-weight:600; border-left-width:3px; border-left-style:solid; }
+    .tag-ok{ background:#E7EDE2; color:#3F5A33; border-left-color:#6E8F57; }
+    .tag-warn{ background:#F3E3DC; color:var(--brick, #8C4432); border-left-color:var(--brick, #8C4432); }
+    .tag-off{ background:#EDEAE0; color:var(--text-soft); border-left-color:var(--line); }
+    .tag-neutral{ background:rgba(154,122,53,.10); color:#5C471C; border-left-color:var(--brass, #9A7A35); font-weight:600; }
+    .field{ border:1px solid var(--line, #D1D5DB) !important; border-radius:4px !important; color:var(--text); background-color:#FFFFFF !important; }
+    .field:focus{ border-color:var(--brass, #9A7A35) !important; box-shadow:0 0 0 .18rem rgba(154,122,53,.18) !important; }
+    .card-paper{ background:var(--card); border:1px solid var(--line); border-radius:6px; }
+    table.lib thead th{ --bs-table-bg:#000000; --bs-table-color:#FFFFFF; background-color:#000000 !important; color:#FFFFFF !important; font-weight:700; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:2px solid var(--brass, #9A7A35) !important; }
+    table.lib tbody tr{ border-bottom:1px solid var(--line, #E5E7EB); }
+    table.lib tbody tr:nth-child(odd) > td{ --bs-table-bg:#F3F4F6; background-color:#F3F4F6 !important; }
+    table.lib tbody tr:nth-child(even) > td{ --bs-table-bg:#FFFFFF; background-color:#FFFFFF !important; }
+    table.lib tbody tr:hover > td{ --bs-table-bg:rgba(154,122,53,.10); background-color:rgba(154,122,53,.10) !important; }
+    .modal-paper{ background:var(--card, #FFFFFF); border:1px solid var(--line); border-radius:8px; }
+    .modal-head-paper{ border-bottom:1px solid var(--line); }
+    .modal-foot-paper{ border-top:1px solid var(--line); }
+    .label-field{ color:var(--text-soft); }
+</style>
+
 <?php if (!empty($this->view->sucesso)): ?>
-    <div class="alert alert-success alert-dismissible fade show rounded-xl text-sm flex items-center gap-2 mb-4" role="alert">
+    <div class="alert alert-success alert-dismissible fade show rounded text-sm flex items-center gap-2 mb-4" role="alert">
         <i class="bi bi-check-circle-fill"></i>
         <span><?= htmlspecialchars($this->view->sucesso) ?></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
@@ -14,7 +42,7 @@ $busca = $this->view->busca ?? '';
 <?php endif; ?>
 
 <?php if (!empty($this->view->erro)): ?>
-    <div class="alert alert-danger alert-dismissible fade show rounded-xl text-sm flex items-center gap-2 mb-4" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show rounded text-sm flex items-center gap-2 mb-4" role="alert">
         <i class="bi bi-exclamation-circle-fill"></i>
         <span><?= htmlspecialchars($this->view->erro) ?></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
@@ -24,22 +52,23 @@ $busca = $this->view->busca ?? '';
 <section class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
     <form action="/livros" method="GET" class="flex-1 max-w-md">
         <div class="input-group">
-            <span class="input-group-text bg-white border-slate-300 text-slate-400 rounded-start-xl">
+            <span class="input-group-text field rounded-start" style="border-right:0;">
                 <i class="bi bi-search"></i>
             </span>
             <input
                 type="text"
                 name="busca"
                 value="<?= htmlspecialchars($busca) ?>"
-                class="form-control border-slate-300 text-sm py-2"
+                class="form-control field text-sm py-2"
+                style="border-left:0; border-right:0;"
                 placeholder="Buscar por título, autor ou ISBN..."
             >
             <?php if ($busca !== ''): ?>
-                <a href="/livros" class="btn btn-outline-secondary border-slate-300 text-sm flex items-center">
+                <a href="/livros" class="btn btn-line text-sm flex items-center" style="border-left:0;">
                     Limpar
                 </a>
             <?php endif; ?>
-            <button type="submit" class="btn btn-dark px-3 text-sm rounded-end-xl">
+            <button type="submit" class="btn btn-ink px-3 text-sm rounded-end">
                 Buscar
             </button>
         </div>
@@ -47,7 +76,7 @@ $busca = $this->view->busca ?? '';
 
     <button
         type="button"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2"
+        class="btn-ink text-sm font-semibold px-4 py-2.5 rounded transition inline-flex items-center justify-center gap-2"
         data-bs-toggle="modal"
         data-bs-target="#modalCadastrarLivro"
     >
@@ -56,54 +85,54 @@ $busca = $this->view->busca ?? '';
     </button>
 </section>
 
-<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<section class="card-paper overflow-hidden">
     <?php if (empty($livros)): ?>
         <div class="p-10 text-center">
-            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto mb-3 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-full ring-icon mx-auto mb-3 flex items-center justify-center">
                 <i class="bi bi-book text-2xl"></i>
             </div>
-            <p class="text-sm font-medium text-slate-700 mb-1">Nenhum livro encontrado</p>
-            <p class="text-xs text-slate-400 m-0">Cadastre um novo exemplar ou altere o filtro de busca.</p>
+            <p class="text-sm font-medium mb-1" style="color:var(--text);">Nenhum livro encontrado</p>
+            <p class="text-xs m-0" style="color:var(--text-soft);">Cadastre um novo exemplar ou altere o filtro de busca.</p>
         </div>
     <?php else: ?>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-sm">
-                <thead class="bg-slate-50 text-slate-600 text-xs uppercase">
+            <table class="table table-hover align-middle mb-0 text-sm lib">
+                <thead>
                     <tr>
-                        <th class="px-5 py-3 font-semibold">ISBN / Código</th>
-                        <th class="px-5 py-3 font-semibold">Título e Autor</th>
-                        <th class="px-5 py-3 font-semibold">Categoria</th>
-                        <th class="px-5 py-3 font-semibold text-center">Total</th>
-                        <th class="px-5 py-3 font-semibold text-center">Disponíveis</th>
-                        <th class="px-5 py-3 font-semibold text-end">Ações</th>
+                        <th class="px-5 py-3.5">ISBN / Código</th>
+                        <th class="px-5 py-3.5">Título e autor</th>
+                        <th class="px-5 py-3.5">Categoria</th>
+                        <th class="px-5 py-3.5 text-center">Total</th>
+                        <th class="px-5 py-3.5 text-center">Disponíveis</th>
+                        <th class="px-5 py-3.5 text-end">Ações</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody>
                     <?php foreach ($livros as $livro): ?>
                         <?php $disponivel = (int) $livro['quantidade_disponivel']; ?>
                         <tr>
-                            <td class="px-5 py-3.5 font-mono text-xs text-slate-600">
+                            <td class="px-5 py-3.5 font-mono text-xs" style="color:var(--text-soft);">
                                 <?= htmlspecialchars($livro['codigo_isbn']) ?>
                             </td>
                             <td class="px-5 py-3.5">
-                                <div class="font-semibold text-slate-800"><?= htmlspecialchars($livro['titulo']) ?></div>
-                                <div class="text-xs text-slate-500"><?= htmlspecialchars($livro['autor']) ?></div>
+                                <div class="font-semibold" style="color:var(--text);"><?= htmlspecialchars($livro['titulo']) ?></div>
+                                <div class="text-xs" style="color:var(--text-soft);"><?= htmlspecialchars($livro['autor']) ?></div>
                             </td>
                             <td class="px-5 py-3.5">
-                                <span class="badge bg-light text-dark border px-2.5 py-1 font-normal">
+                                <span class="tag tag-neutral">
                                     <?= htmlspecialchars($livro['categoria']) ?>
                                 </span>
                             </td>
-                            <td class="px-5 py-3.5 text-center font-medium text-slate-700">
+                            <td class="px-5 py-3.5 text-center font-medium" style="color:var(--text);">
                                 <?= (int) $livro['quantidade_total'] ?>
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <?php if ($disponivel > 0): ?>
-                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
+                                    <span class="tag tag-ok">
                                         <?= $disponivel ?> disp.
                                     </span>
                                 <?php else: ?>
-                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
+                                    <span class="tag tag-warn">
                                         Esgotado
                                     </span>
                                 <?php endif; ?>
@@ -112,7 +141,7 @@ $busca = $this->view->busca ?? '';
                                 <div class="inline-flex items-center gap-1.5">
                                     <button
                                         type="button"
-                                        class="btn btn-sm btn-outline-secondary rounded-lg btn-editar-livro"
+                                        class="btn btn-sm btn-line rounded btn-editar-livro"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalEditarLivro"
                                         data-id="<?= (int) $livro['id'] ?>"
@@ -128,7 +157,8 @@ $busca = $this->view->busca ?? '';
                                     </button>
                                     <button
                                         type="button"
-                                        class="btn btn-sm btn-outline-danger rounded-lg btn-excluir-livro"
+                                        class="btn btn-sm rounded btn-excluir-livro"
+                                        style="border:1px solid var(--brick); color:var(--brick); background:rgba(140,68,50,.06);"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalExcluirLivro"
                                         data-id="<?= (int) $livro['id'] ?>"
@@ -149,40 +179,40 @@ $busca = $this->view->busca ?? '';
 
 <div class="modal fade" id="modalCadastrarLivro" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <form action="/livros/cadastrar" method="POST" class="modal-content rounded-2xl border-0 shadow">
-            <div class="modal-header border-b border-slate-200 px-6 py-4">
-                <h5 class="modal-title font-bold text-slate-800 text-base">Cadastrar Novo Livro</h5>
+        <form action="/livros/cadastrar" method="POST" class="modal-content modal-paper border-0">
+            <div class="modal-header modal-head-paper px-6 py-4">
+                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text);">Cadastrar Novo Livro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Livro *</label>
-                    <input type="text" name="titulo" class="form-control rounded-xl text-sm" required>
+                    <label class="block text-xs font-semibold label-field mb-1">Título do Livro *</label>
+                    <input type="text" name="titulo" class="form-control field text-sm" required>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Autor *</label>
-                        <input type="text" name="autor" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Autor *</label>
+                        <input type="text" name="autor" class="form-control field text-sm" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ISBN *</label>
-                        <input type="text" name="codigo_isbn" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Código / ISBN *</label>
+                        <input type="text" name="codigo_isbn" class="form-control field text-sm" required>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Categoria *</label>
-                        <input type="text" name="categoria" class="form-control rounded-xl text-sm" placeholder="Ex.: Ficção, Tecnologia" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Categoria *</label>
+                        <input type="text" name="categoria" class="form-control field text-sm" placeholder="Ex.: Ficção, Tecnologia" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade Total *</label>
-                        <input type="number" name="quantidade_total" value="1" min="1" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Quantidade Total *</label>
+                        <input type="number" name="quantidade_total" value="1" min="1" class="form-control field text-sm" required>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-t border-slate-200 px-6 py-3">
-                <button type="button" class="btn btn-light border text-sm rounded-xl" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+            <div class="modal-footer modal-foot-paper px-6 py-3">
+                <button type="button" class="btn btn-line text-sm rounded" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn-ink text-sm font-semibold px-4 py-2 rounded">
                     Salvar Livro
                 </button>
             </div>
@@ -192,45 +222,45 @@ $busca = $this->view->busca ?? '';
 
 <div class="modal fade" id="modalEditarLivro" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <form action="/livros/editar" method="POST" class="modal-content rounded-2xl border-0 shadow">
+        <form action="/livros/editar" method="POST" class="modal-content modal-paper border-0">
             <input type="hidden" name="id" id="editLivroId">
-            <div class="modal-header border-b border-slate-200 px-6 py-4">
-                <h5 class="modal-title font-bold text-slate-800 text-base">Editar Livro</h5>
+            <div class="modal-header modal-head-paper px-6 py-4">
+                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text);">Editar Livro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Livro *</label>
-                    <input type="text" name="titulo" id="editLivroTitulo" class="form-control rounded-xl text-sm" required>
+                    <label class="block text-xs font-semibold label-field mb-1">Título do Livro *</label>
+                    <input type="text" name="titulo" id="editLivroTitulo" class="form-control field text-sm" required>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Autor *</label>
-                        <input type="text" name="autor" id="editLivroAutor" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Autor *</label>
+                        <input type="text" name="autor" id="editLivroAutor" class="form-control field text-sm" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ISBN *</label>
-                        <input type="text" name="codigo_isbn" id="editLivroIsbn" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Código / ISBN *</label>
+                        <input type="text" name="codigo_isbn" id="editLivroIsbn" class="form-control field text-sm" required>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Categoria *</label>
-                        <input type="text" name="categoria" id="editLivroCategoria" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Categoria *</label>
+                        <input type="text" name="categoria" id="editLivroCategoria" class="form-control field text-sm" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Qtd. Total *</label>
-                        <input type="number" name="quantidade_total" id="editLivroTotal" min="1" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Qtd. Total *</label>
+                        <input type="number" name="quantidade_total" id="editLivroTotal" min="1" class="form-control field text-sm" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Disponíveis *</label>
-                        <input type="number" name="quantidade_disponivel" id="editLivroDisponivel" min="0" class="form-control rounded-xl text-sm" required>
+                        <label class="block text-xs font-semibold label-field mb-1">Disponíveis *</label>
+                        <input type="number" name="quantidade_disponivel" id="editLivroDisponivel" min="0" class="form-control field text-sm" required>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-t border-slate-200 px-6 py-3">
-                <button type="button" class="btn btn-light border text-sm rounded-xl" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+            <div class="modal-footer modal-foot-paper px-6 py-3">
+                <button type="button" class="btn btn-line text-sm rounded" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn-ink text-sm font-semibold px-4 py-2 rounded">
                     Atualizar Livro
                 </button>
             </div>
@@ -240,19 +270,19 @@ $busca = $this->view->busca ?? '';
 
 <div class="modal fade" id="modalExcluirLivro" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-        <form action="/livros/excluir" method="POST" class="modal-content rounded-2xl border-0 shadow">
+        <form action="/livros/excluir" method="POST" class="modal-content modal-paper border-0">
             <input type="hidden" name="id" id="excluirLivroId">
             <div class="modal-body p-6 text-center">
-                <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 mx-auto mb-3 flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full ring-icon-brick mx-auto mb-3 flex items-center justify-center">
                     <i class="bi bi-trash text-xl"></i>
                 </div>
-                <h5 class="font-bold text-slate-800 text-base mb-1">Excluir Livro?</h5>
-                <p class="text-xs text-slate-500 mb-4">
-                    Deseja remover <strong id="excluirLivroTitulo" class="text-slate-700"></strong> do catálogo?
+                <h5 class="font-brand font-semibold text-base mb-1" style="color:var(--text);">Excluir Livro?</h5>
+                <p class="text-xs mb-4" style="color:var(--text-soft);">
+                    Deseja remover <strong id="excluirLivroTitulo" style="color:var(--text);"></strong> do catálogo?
                 </p>
                 <div class="flex gap-2 justify-center">
-                    <button type="button" class="btn btn-light border text-sm rounded-xl flex-1" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold py-2 px-3 rounded-xl flex-1">
+                    <button type="button" class="btn btn-line text-sm rounded flex-1" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-brick text-sm font-semibold py-2 px-3 rounded flex-1">
                         Excluir
                     </button>
                 </div>

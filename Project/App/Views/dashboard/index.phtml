@@ -11,150 +11,165 @@ $pendencias = $this->view->pendencias ?? [];
 $temAtraso = ($resumo['emprestimos_atrasados'] > 0);
 ?>
 
+<style>
+    .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
+    .btn-moss{ background:#4F6B41; color:#fff; border:1px solid #4F6B41; }
+    .btn-moss:hover{ background:#3F5634; border-color:#3F5634; }
+    .ring-icon{ border:1.5px solid var(--brass, #9A7A35); color:#6E5522; background:rgba(255,255,255,.65); }
+    .ring-icon-brick{ border:1.5px solid var(--brick, #8C4432); color:var(--brick, #8C4432); background:rgba(140,68,50,.08); }
+    .tag{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .65rem; border-radius:3px; font-size:.72rem; font-weight:600; border-left-width:3px; border-left-style:solid; }
+    .tag-warn{ background:#F3E3DC; color:var(--brick, #8C4432); border-left-color:var(--brick, #8C4432); }
+    .tag-hold{ background:#F3EADC; color:#6E5522; border-left-color:var(--brass, #9A7A35); }
+    .card-paper{ background:var(--card); border:1px solid var(--line); border-radius:6px; }
+    .card-alert{ background:rgba(140,68,50,.06); border:1px solid var(--brick, #8C4432); border-radius:6px; }
+    .link-brass{ color:#6E5522; font-weight:600; }
+    .link-brass:hover{ color:#4A3816; text-decoration:underline; }
+    .action-card{ border:1px solid rgba(0,0,0,.08); background:rgba(0,0,0,.04); border-radius:8px; transition:background .15s, border-color .15s; }
+    .action-card:hover{ background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.15); }
+    .action-card-primary{ background:var(--ink); border:1px solid var(--ink); border-radius:6px; transition:background .15s; }
+    .action-card-primary:hover{ background:var(--ink-3); }
+    table.lib thead th{ --bs-table-bg:#000000; --bs-table-color:#FFFFFF; background-color:#000000 !important; color:#FFFFFF !important; font-weight:700; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:2px solid var(--brass, #9A7A35) !important; }
+    table.lib tbody tr{ border-bottom:1px solid var(--line, #E5E7EB); }
+    table.lib tbody tr:nth-child(odd) > td{ --bs-table-bg:#F3F4F6; background-color:#F3F4F6 !important; }
+    table.lib tbody tr:nth-child(even) > td{ --bs-table-bg:#FFFFFF; background-color:#FFFFFF !important; }
+    table.lib tbody tr:hover > td{ --bs-table-bg:rgba(154,122,53,.10); background-color:rgba(154,122,53,.10) !important; }
+</style>
+
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="card-paper p-5 flex items-center justify-between">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Total de Livros</p>
-            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['total_livros'] ?></p>
+            <p class="text-xs font-medium mb-1" style="color:var(--text-soft);">Total de livros</p>
+            <p class="font-brand font-semibold text-3xl m-0" style="color:var(--text);"><?= $resumo['total_livros'] ?></p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <i class="bi bi-book text-xl"></i>
+        <div class="w-11 h-11 rounded-full ring-icon flex items-center justify-center">
+            <i class="bi bi-book text-lg"></i>
         </div>
     </div>
 
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="card-paper p-5 flex items-center justify-between">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Usuários Cadastrados</p>
-            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['total_usuarios'] ?></p>
+            <p class="text-xs font-medium mb-1" style="color:var(--text-soft);">Usuários cadastrados</p>
+            <p class="font-brand font-semibold text-3xl m-0" style="color:var(--text);"><?= $resumo['total_usuarios'] ?></p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <i class="bi bi-people text-xl"></i>
+        <div class="w-11 h-11 rounded-full ring-icon flex items-center justify-center">
+            <i class="bi bi-people text-lg"></i>
         </div>
     </div>
 
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="card-paper p-5 flex items-center justify-between">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Empréstimos Ativos</p>
-            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['emprestimos_ativos'] ?></p>
+            <p class="text-xs font-medium mb-1" style="color:var(--text-soft);">Empréstimos ativos</p>
+            <p class="font-brand font-semibold text-3xl m-0" style="color:var(--text);"><?= $resumo['emprestimos_ativos'] ?></p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <i class="bi bi-arrow-left-right text-xl"></i>
+        <div class="w-11 h-11 rounded-full ring-icon flex items-center justify-center">
+            <i class="bi bi-arrow-left-right text-lg"></i>
         </div>
     </div>
 
-    <div class="bg-white p-5 rounded-xl border <?= $temAtraso ? 'border-rose-300 bg-rose-50/40' : 'border-slate-200' ?> shadow-sm flex items-center justify-between">
+    <div class="<?= $temAtraso ? 'card-alert' : 'card-paper' ?> p-5 flex items-center justify-between">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider <?= $temAtraso ? 'text-rose-600' : 'text-slate-500' ?> mb-1">Empréstimos Atrasados</p>
-            <p class="text-2xl font-bold <?= $temAtraso ? 'text-rose-600' : 'text-slate-800' ?> m-0"><?= $resumo['emprestimos_atrasados'] ?></p>
+            <p class="text-xs font-medium mb-1" style="color:<?= $temAtraso ? 'var(--brick, #8C4432)' : 'var(--text-soft)' ?>;">Empréstimos atrasados</p>
+            <p class="font-brand font-semibold text-3xl m-0" style="color:<?= $temAtraso ? 'var(--brick, #8C4432)' : 'var(--text)' ?>;"><?= $resumo['emprestimos_atrasados'] ?></p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-            <i class="bi bi-exclamation-triangle text-xl"></i>
+        <div class="w-11 h-11 rounded-full <?= $temAtraso ? 'ring-icon-brick' : 'ring-icon' ?> flex items-center justify-center">
+            <i class="bi bi-exclamation-triangle text-lg"></i>
         </div>
     </div>
 </section>
 
 <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <a href="/emprestimos/novo"
-       class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center">
-                <i class="bi bi-plus-lg text-lg"></i>
-            </div>
-            <div>
-                <span class="font-semibold block text-sm">Novo Empréstimo</span>
-                <span class="text-xs text-indigo-100">Atendimento no balcão</span>
-            </div>
+       class="action-card p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full ring-icon flex items-center justify-center shrink-0">
+            <i class="bi bi-plus-lg text-lg"></i>
         </div>
-        <i class="bi bi-arrow-right text-indigo-200 group-hover:translate-x-1 transition-transform"></i>
+        <div>
+            <span class="font-semibold block text-sm" style="color:var(--text);">Novo Empréstimo</span>
+            <span class="text-xs" style="color:var(--text-soft);">Atendimento no balcão</span>
+        </div>
     </a>
 
     <a href="/livros"
-       class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <i class="bi bi-journal-plus text-lg"></i>
-            </div>
-            <div>
-                <span class="font-semibold block text-sm">Cadastrar Livro</span>
-                <span class="text-xs text-slate-500">Adicionar ao catálogo</span>
-            </div>
+       class="action-card p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full ring-icon flex items-center justify-center shrink-0">
+            <i class="bi bi-journal-plus text-lg"></i>
         </div>
-        <i class="bi bi-arrow-right text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+        <div>
+            <span class="font-semibold block text-sm" style="color:var(--text);">Cadastrar Livro</span>
+            <span class="text-xs" style="color:var(--text-soft);">Adicionar ao catálogo</span>
+        </div>
     </a>
 
     <a href="/usuarios"
-       class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <i class="bi bi-person-plus text-lg"></i>
-            </div>
-            <div>
-                <span class="font-semibold block text-sm">Cadastrar Usuário</span>
-                <span class="text-xs text-slate-500">Novo leitor da biblioteca</span>
-            </div>
+       class="action-card p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full ring-icon flex items-center justify-center shrink-0">
+            <i class="bi bi-person-plus text-lg"></i>
         </div>
-        <i class="bi bi-arrow-right text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+        <div>
+            <span class="font-semibold block text-sm" style="color:var(--text);">Cadastrar Usuário</span>
+            <span class="text-xs" style="color:var(--text-soft);">Novo leitor da biblioteca</span>
+        </div>
     </a>
 </section>
 
-<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+<section class="card-paper overflow-hidden">
+    <div class="px-5 py-4 border-b flex items-center justify-between" style="border-color:var(--line); background:var(--paper);">
         <div class="flex items-center gap-2">
-            <i class="bi bi-bell text-amber-500"></i>
-            <h2 class="text-base font-bold text-slate-800 m-0">Atenção Imediata (Atrasados e Vencendo Hoje)</h2>
+            <i class="bi bi-bell" style="color:#6E5522;"></i>
+            <h2 class="font-brand font-bold text-base m-0" style="color:var(--text);">Atenção imediata (atrasados e vencendo hoje)</h2>
         </div>
-        <a href="/emprestimos" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">
+        <a href="/emprestimos" class="text-xs link-brass">
             Ver todos os ativos
         </a>
     </div>
 
     <?php if (empty($pendencias)): ?>
         <div class="p-8 text-center">
-            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto mb-3 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:rgba(79,107,65,.08); color:#4F6B41; border:1px solid #4F6B41;">
                 <i class="bi bi-check2-circle text-2xl"></i>
             </div>
-            <p class="text-sm font-medium text-slate-700 mb-1">Nenhum empréstimo atrasado ou vencendo hoje</p>
-            <p class="text-xs text-slate-400 m-0">Todas as devoluções estão dentro do prazo.</p>
+            <p class="text-sm font-medium mb-1" style="color:var(--text);">Nenhum empréstimo atrasado ou vencendo hoje</p>
+            <p class="text-xs m-0" style="color:var(--text-soft);">Todas as devoluções estão dentro do prazo.</p>
         </div>
     <?php else: ?>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-sm">
-                <thead class="bg-slate-50 text-slate-600 text-xs uppercase">
+            <table class="table table-hover align-middle mb-0 text-sm lib">
+                <thead>
                     <tr>
-                        <th class="px-5 py-3 font-semibold">Usuário</th>
-                        <th class="px-5 py-3 font-semibold">Livro</th>
-                        <th class="px-5 py-3 font-semibold">Previsão Devolução</th>
-                        <th class="px-5 py-3 font-semibold">Situação</th>
-                        <th class="px-5 py-3 font-semibold text-end">Ação</th>
+                        <th class="px-5 py-3.5">Usuário</th>
+                        <th class="px-5 py-3.5">Livro</th>
+                        <th class="px-5 py-3.5">Previsão devolução</th>
+                        <th class="px-5 py-3.5">Situação</th>
+                        <th class="px-5 py-3.5 text-end">Ação</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody>
                     <?php foreach ($pendencias as $item): ?>
                         <?php $atrasado = ((int) $item['dias_atraso'] > 0); ?>
                         <tr>
-                            <td class="px-5 py-3.5 font-medium text-slate-800">
+                            <td class="px-5 py-3.5 font-medium" style="color:var(--text);">
                                 <?= htmlspecialchars($item['usuario_nome']) ?>
                             </td>
-                            <td class="px-5 py-3.5 text-slate-600">
+                            <td class="px-5 py-3.5" style="color:var(--text-soft);">
                                 <?= htmlspecialchars($item['livro_titulo']) ?>
                             </td>
-                            <td class="px-5 py-3.5 text-slate-600">
+                            <td class="px-5 py-3.5" style="color:var(--text-soft);">
                                 <?= date('d/m/Y', strtotime($item['data_prevista'])) ?>
                             </td>
                             <td class="px-5 py-3.5">
                                 <?php if ($atrasado): ?>
-                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
+                                    <span class="tag tag-warn">
                                         Atrasado (<?= (int) $item['dias_atraso'] ?>d)
                                     </span>
                                 <?php else: ?>
-                                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1">
+                                    <span class="tag tag-hold">
                                         Vence hoje
                                     </span>
                                 <?php endif; ?>
                             </td>
                             <td class="px-5 py-3.5 text-end">
                                 <a href="/emprestimos"
-                                   class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                                   class="btn-moss inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded transition">
                                     <i class="bi bi-check2"></i>
                                     <span>Devolver</span>
                                 </a>

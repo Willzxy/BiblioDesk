@@ -6,21 +6,52 @@
     <title>BiblioDesk - Acesso Restrito</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root{
+            --ink:#192922;
+            --ink-2:#223429;
+            --ink-3:#2C4433;
+            --paper:#F1ECDD;
+            --card:#FAF7EE;
+            --line:#DDD5BF;
+            --text:#2A2620;
+            --text-soft:#6E6757;
+            --brass:#9A7A35;
+            --brass-dim:#C7B482;
+            --brick:#8C4432;
+        }
+        body{ font-family:'IBM Plex Sans', system-ui, sans-serif; background:var(--ink); }
+        .font-brand{ font-family:'Fraunces', serif; }
+        .field{ border:1px solid var(--line) !important; border-radius:4px !important; color:var(--text); }
+        .field:focus{ border-color:var(--brass) !important; box-shadow:0 0 0 .18rem rgba(154,122,53,.18) !important; }
+        .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
+        .btn-ink:hover{ background:var(--ink-3); border-color:var(--ink-3); color:#fff; }
+        .btn-line{ border:1px solid var(--line); color:var(--text-soft); background:var(--card); }
+        .btn-line:hover{ background:var(--paper); }
+        .card-paper{
+            background:var(--card); border:1px solid var(--line); border-radius:8px;
+            box-shadow:0 24px 48px -12px rgba(0,0,0,.45);
+        }
+        .ring-icon{ border:1.5px solid var(--brass); color:var(--brass); background:rgba(154,122,53,.08); }
+    </style>
 </head>
-<body class="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <main class="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+    <main class="max-w-md w-full card-paper p-8">
         <div class="text-center mb-6">
-            <div class="w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 mx-auto mb-4 flex items-center justify-center">
+            <div class="w-14 h-14 rounded-full ring-icon mx-auto mb-4 flex items-center justify-center">
                 <i class="bi bi-shield-lock text-2xl"></i>
             </div>
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">BiblioDesk</h1>
-            <p class="text-sm text-slate-500 mt-1">Área restrita ao bibliotecário</p>
+            <h1 class="font-brand font-semibold text-2xl m-0" style="color:var(--text);">BiblioDesk</h1>
+            <p class="text-sm mt-1" style="color:var(--text-soft);">Área restrita ao bibliotecário</p>
         </div>
 
         <?php if (!empty($this->view->erro)): ?>
-            <div class="alert alert-danger rounded-xl text-sm py-2.5 px-3 flex items-center gap-2 mb-4" role="alert">
+            <div class="alert alert-danger rounded text-sm py-2.5 px-3 flex items-center gap-2 mb-4" role="alert">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span><?= htmlspecialchars($this->view->erro) ?></span>
             </div>
@@ -28,18 +59,19 @@
 
         <form action="/autenticar" method="POST" class="space-y-4">
             <div>
-                <label for="senha" class="block text-sm font-medium text-slate-700 mb-1.5">
+                <label for="senha" class="block text-sm font-medium mb-1.5" style="color:var(--text);">
                     Senha de acesso
                 </label>
                 <div class="input-group">
-                    <span class="input-group-text bg-slate-50 border-slate-300 text-slate-500 rounded-start-xl">
+                    <span class="input-group-text field rounded-start" style="border-right:0; background:var(--paper);">
                         <i class="bi bi-key"></i>
                     </span>
                     <input
                         type="password"
                         id="senha"
                         name="senha"
-                        class="form-control border-slate-300 py-2.5 text-slate-800"
+                        class="form-control field py-2.5"
+                        style="border-left:0; border-right:0;"
                         placeholder="Digite a senha do sistema"
                         required
                         autofocus
@@ -47,7 +79,8 @@
                     <button
                         type="button"
                         id="toggleSenha"
-                        class="btn btn-outline-secondary border-slate-300 text-slate-500 rounded-end-xl"
+                        class="btn btn-line rounded-end"
+                        style="border-left:0;"
                         aria-label="Mostrar ou ocultar senha"
                     >
                         <i class="bi bi-eye" id="iconeSenha"></i>
@@ -57,15 +90,15 @@
 
             <button
                 type="submit"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-sm"
+                class="w-full btn-ink font-semibold py-2.5 px-4 rounded transition flex items-center justify-center gap-2"
             >
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>Entrar no Sistema</span>
             </button>
         </form>
 
-        <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-            <span class="text-xs text-slate-400">Controle Bibliotecário Interno</span>
+        <div class="mt-6 pt-4 border-t text-center" style="border-color:var(--line);">
+            <span class="text-xs" style="color:var(--text-soft);">Controle Bibliotecário Interno</span>
         </div>
     </main>
 
