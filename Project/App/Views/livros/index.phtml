@@ -1,0 +1,285 @@
+<?php $this->layout('topo'); ?>
+
+<?php
+$livros = $this->view->livros ?? [];
+$busca = $this->view->busca ?? '';
+?>
+
+<?php if (!empty($this->view->sucesso)): ?>
+    <div class="alert alert-success alert-dismissible fade show rounded-xl text-sm flex items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span><?= htmlspecialchars($this->view->sucesso) ?></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($this->view->erro)): ?>
+    <div class="alert alert-danger alert-dismissible fade show rounded-xl text-sm flex items-center gap-2 mb-4" role="alert">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span><?= htmlspecialchars($this->view->erro) ?></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+<?php endif; ?>
+
+<section class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
+    <form action="/livros" method="GET" class="flex-1 max-w-md">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-slate-300 text-slate-400 rounded-start-xl">
+                <i class="bi bi-search"></i>
+            </span>
+            <input
+                type="text"
+                name="busca"
+                value="<?= htmlspecialchars($busca) ?>"
+                class="form-control border-slate-300 text-sm py-2"
+                placeholder="Buscar por título, autor ou ISBN..."
+            >
+            <?php if ($busca !== ''): ?>
+                <a href="/livros" class="btn btn-outline-secondary border-slate-300 text-sm flex items-center">
+                    Limpar
+                </a>
+            <?php endif; ?>
+            <button type="submit" class="btn btn-dark px-3 text-sm rounded-end-xl">
+                Buscar
+            </button>
+        </div>
+    </form>
+
+    <button
+        type="button"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modalCadastrarLivro"
+    >
+        <i class="bi bi-plus-lg"></i>
+        <span>Novo Livro</span>
+    </button>
+</section>
+
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <?php if (empty($livros)): ?>
+        <div class="p-10 text-center">
+            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto mb-3 flex items-center justify-center">
+                <i class="bi bi-book text-2xl"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-700 mb-1">Nenhum livro encontrado</p>
+            <p class="text-xs text-slate-400 m-0">Cadastre um novo exemplar ou altere o filtro de busca.</p>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-sm">
+                <thead class="bg-slate-50 text-slate-600 text-xs uppercase">
+                    <tr>
+                        <th class="px-5 py-3 font-semibold">ISBN / Código</th>
+                        <th class="px-5 py-3 font-semibold">Título e Autor</th>
+                        <th class="px-5 py-3 font-semibold">Categoria</th>
+                        <th class="px-5 py-3 font-semibold text-center">Total</th>
+                        <th class="px-5 py-3 font-semibold text-center">Disponíveis</th>
+                        <th class="px-5 py-3 font-semibold text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php foreach ($livros as $livro): ?>
+                        <?php $disponivel = (int) $livro['quantidade_disponivel']; ?>
+                        <tr>
+                            <td class="px-5 py-3.5 font-mono text-xs text-slate-600">
+                                <?= htmlspecialchars($livro['codigo_isbn']) ?>
+                            </td>
+                            <td class="px-5 py-3.5">
+                                <div class="font-semibold text-slate-800"><?= htmlspecialchars($livro['titulo']) ?></div>
+                                <div class="text-xs text-slate-500"><?= htmlspecialchars($livro['autor']) ?></div>
+                            </td>
+                            <td class="px-5 py-3.5">
+                                <span class="badge bg-light text-dark border px-2.5 py-1 font-normal">
+                                    <?= htmlspecialchars($livro['categoria']) ?>
+                                </span>
+                            </td>
+                            <td class="px-5 py-3.5 text-center font-medium text-slate-700">
+                                <?= (int) $livro['quantidade_total'] ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-center">
+                                <?php if ($disponivel > 0): ?>
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
+                                        <?= $disponivel ?> disp.
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
+                                        Esgotado
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-end">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-secondary rounded-lg btn-editar-livro"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarLivro"
+                                        data-id="<?= (int) $livro['id'] ?>"
+                                        data-isbn="<?= htmlspecialchars($livro['codigo_isbn']) ?>"
+                                        data-titulo="<?= htmlspecialchars($livro['titulo']) ?>"
+                                        data-autor="<?= htmlspecialchars($livro['autor']) ?>"
+                                        data-categoria="<?= htmlspecialchars($livro['categoria']) ?>"
+                                        data-total="<?= (int) $livro['quantidade_total'] ?>"
+                                        data-disponivel="<?= (int) $livro['quantidade_disponivel'] ?>"
+                                        title="Editar livro"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger rounded-lg btn-excluir-livro"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalExcluirLivro"
+                                        data-id="<?= (int) $livro['id'] ?>"
+                                        data-titulo="<?= htmlspecialchars($livro['titulo']) ?>"
+                                        title="Excluir livro"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</section>
+
+<div class="modal fade" id="modalCadastrarLivro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/livros/cadastrar" method="POST" class="modal-content rounded-2xl border-0 shadow">
+            <div class="modal-header border-b border-slate-200 px-6 py-4">
+                <h5 class="modal-title font-bold text-slate-800 text-base">Cadastrar Novo Livro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Livro *</label>
+                    <input type="text" name="titulo" class="form-control rounded-xl text-sm" required>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Autor *</label>
+                        <input type="text" name="autor" class="form-control rounded-xl text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ISBN *</label>
+                        <input type="text" name="codigo_isbn" class="form-control rounded-xl text-sm" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Categoria *</label>
+                        <input type="text" name="categoria" class="form-control rounded-xl text-sm" placeholder="Ex.: Ficção, Tecnologia" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade Total *</label>
+                        <input type="number" name="quantidade_total" value="1" min="1" class="form-control rounded-xl text-sm" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-t border-slate-200 px-6 py-3">
+                <button type="button" class="btn btn-light border text-sm rounded-xl" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+                    Salvar Livro
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarLivro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/livros/editar" method="POST" class="modal-content rounded-2xl border-0 shadow">
+            <input type="hidden" name="id" id="editLivroId">
+            <div class="modal-header border-b border-slate-200 px-6 py-4">
+                <h5 class="modal-title font-bold text-slate-800 text-base">Editar Livro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Título do Livro *</label>
+                    <input type="text" name="titulo" id="editLivroTitulo" class="form-control rounded-xl text-sm" required>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Autor *</label>
+                        <input type="text" name="autor" id="editLivroAutor" class="form-control rounded-xl text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ISBN *</label>
+                        <input type="text" name="codigo_isbn" id="editLivroIsbn" class="form-control rounded-xl text-sm" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Categoria *</label>
+                        <input type="text" name="categoria" id="editLivroCategoria" class="form-control rounded-xl text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Qtd. Total *</label>
+                        <input type="number" name="quantidade_total" id="editLivroTotal" min="1" class="form-control rounded-xl text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Disponíveis *</label>
+                        <input type="number" name="quantidade_disponivel" id="editLivroDisponivel" min="0" class="form-control rounded-xl text-sm" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-t border-slate-200 px-6 py-3">
+                <button type="button" class="btn btn-light border text-sm rounded-xl" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+                    Atualizar Livro
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="modalExcluirLivro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <form action="/livros/excluir" method="POST" class="modal-content rounded-2xl border-0 shadow">
+            <input type="hidden" name="id" id="excluirLivroId">
+            <div class="modal-body p-6 text-center">
+                <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 mx-auto mb-3 flex items-center justify-center">
+                    <i class="bi bi-trash text-xl"></i>
+                </div>
+                <h5 class="font-bold text-slate-800 text-base mb-1">Excluir Livro?</h5>
+                <p class="text-xs text-slate-500 mb-4">
+                    Deseja remover <strong id="excluirLivroTitulo" class="text-slate-700"></strong> do catálogo?
+                </p>
+                <div class="flex gap-2 justify-center">
+                    <button type="button" class="btn btn-light border text-sm rounded-xl flex-1" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold py-2 px-3 rounded-xl flex-1">
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.btn-editar-livro').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('editLivroId').value = btn.dataset.id;
+            document.getElementById('editLivroIsbn').value = btn.dataset.isbn;
+            document.getElementById('editLivroTitulo').value = btn.dataset.titulo;
+            document.getElementById('editLivroAutor').value = btn.dataset.autor;
+            document.getElementById('editLivroCategoria').value = btn.dataset.categoria;
+            document.getElementById('editLivroTotal').value = btn.dataset.total;
+            document.getElementById('editLivroDisponivel').value = btn.dataset.disponivel;
+        });
+    });
+
+    document.querySelectorAll('.btn-excluir-livro').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('excluirLivroId').value = btn.dataset.id;
+            document.getElementById('excluirLivroTitulo').textContent = btn.dataset.titulo;
+        });
+    });
+</script>
+
+<?php $this->layout('rodape'); ?>

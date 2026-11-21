@@ -1,0 +1,110 @@
+<?php $this->layout('topo'); ?>
+
+<?php
+$historico = $this->view->historico ?? [];
+$filtro = $this->view->filtro ?? 'TODOS';
+$busca = $this->view->busca ?? '';
+?>
+
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <form action="/historico" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+        <div class="flex-1 max-w-md">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-slate-300 text-slate-400 rounded-start-xl">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input
+                    type="text"
+                    name="busca"
+                    value="<?= htmlspecialchars($busca) ?>"
+                    class="form-control border-slate-300 text-sm py-2"
+                    placeholder="Buscar por usuário ou título do livro..."
+                >
+            </div>
+        </div>
+
+        <div class="w-full sm:w-52">
+            <select name="filtro" class="form-select rounded-xl text-sm border-slate-300 py-2">
+                <option value="TODOS" <?= $filtro === 'TODOS' ? 'selected' : '' ?>>Todos os registros</option>
+                <option value="NO_PRAZO" <?= $filtro === 'NO_PRAZO' ? 'selected' : '' ?>>Devolvidos no prazo</option>
+                <option value="COM_ATRASO" <?= $filtro === 'COM_ATRASO' ? 'selected' : '' ?>>Devolvidos com atraso</option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button type="submit" class="btn btn-dark px-4 py-2 text-sm rounded-xl">
+                Filtrar
+            </button>
+            <?php if ($busca !== '' || $filtro !== 'TODOS'): ?>
+                <a href="/historico" class="btn btn-outline-secondary border-slate-300 py-2 px-3 text-sm rounded-xl">
+                    Limpar
+                </a>
+            <?php endif; ?>
+        </div>
+    </form>
+</section>
+
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <?php if (empty($historico)): ?>
+        <div class="p-10 text-center">
+            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto mb-3 flex items-center justify-center">
+                <i class="bi bi-clock-history text-2xl"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-700 mb-1">Nenhum histórico encontrado</p>
+            <p class="text-xs text-slate-400 m-0">As devoluções concluídas aparecerão nesta listagem.</p>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0 text-sm">
+                <thead class="bg-slate-50 text-slate-600 text-xs uppercase">
+                    <tr>
+                        <th class="px-5 py-3 font-semibold">Usuário</th>
+                        <th class="px-5 py-3 font-semibold">Livro</th>
+                        <th class="px-5 py-3 font-semibold">Empréstimo</th>
+                        <th class="px-5 py-3 font-semibold">Previsão</th>
+                        <th class="px-5 py-3 font-semibold">Devolução Real</th>
+                        <th class="px-5 py-3 font-semibold">Situação Final</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php foreach ($historico as $item): ?>
+                        <?php
+                        $diasDiferenca = (int) ($item['dias_diferenca'] ?? 0);
+                        $comAtraso = ($diasDiferenca > 0);
+                        ?>
+                        <tr>
+                            <td class="px-5 py-3.5 font-medium text-slate-800">
+                                <?= htmlspecialchars($item['usuario_nome']) ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-600">
+                                <?= htmlspecialchars($item['livro_titulo']) ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-600">
+                                <?= date('d/m/Y', strtotime($item['data_emprestimo'])) ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-600">
+                                <?= date('d/m/Y', strtotime($item['data_prevista'])) ?>
+                            </td>
+                            <td class="px-5 py-3.5 font-medium text-slate-700">
+                                <?= date('d/m/Y', strtotime($item['data_devolucao'])) ?>
+                            </td>
+                            <td class="px-5 py-3.5">
+                                <?php if ($comAtraso): ?>
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1">
+                                        Com atraso (<?= $diasDiferenca ?>d)
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
+                                        No prazo
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</section>
+
+<?php $this->layout('rodape'); ?>
