@@ -1,0 +1,170 @@
+<?php $this->layout('topo'); ?>
+
+<?php
+$resumo = $this->view->resumo ?? [
+    'total_livros' => 0,
+    'total_usuarios' => 0,
+    'emprestimos_ativos' => 0,
+    'emprestimos_atrasados' => 0
+];
+$pendencias = $this->view->pendencias ?? [];
+$temAtraso = ($resumo['emprestimos_atrasados'] > 0);
+?>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Total de Livros</p>
+            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['total_livros'] ?></p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i class="bi bi-book text-xl"></i>
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Usuários Cadastrados</p>
+            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['total_usuarios'] ?></p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <i class="bi bi-people text-xl"></i>
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-1">Empréstimos Ativos</p>
+            <p class="text-2xl font-bold text-slate-800 m-0"><?= $resumo['emprestimos_ativos'] ?></p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i class="bi bi-arrow-left-right text-xl"></i>
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl border <?= $temAtraso ? 'border-rose-300 bg-rose-50/40' : 'border-slate-200' ?> shadow-sm flex items-center justify-between">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wider <?= $temAtraso ? 'text-rose-600' : 'text-slate-500' ?> mb-1">Empréstimos Atrasados</p>
+            <p class="text-2xl font-bold <?= $temAtraso ? 'text-rose-600' : 'text-slate-800' ?> m-0"><?= $resumo['emprestimos_atrasados'] ?></p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <i class="bi bi-exclamation-triangle text-xl"></i>
+        </div>
+    </div>
+</section>
+
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <a href="/emprestimos/novo"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center">
+                <i class="bi bi-plus-lg text-lg"></i>
+            </div>
+            <div>
+                <span class="font-semibold block text-sm">Novo Empréstimo</span>
+                <span class="text-xs text-indigo-100">Atendimento no balcão</span>
+            </div>
+        </div>
+        <i class="bi bi-arrow-right text-indigo-200 group-hover:translate-x-1 transition-transform"></i>
+    </a>
+
+    <a href="/livros"
+       class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <i class="bi bi-journal-plus text-lg"></i>
+            </div>
+            <div>
+                <span class="font-semibold block text-sm">Cadastrar Livro</span>
+                <span class="text-xs text-slate-500">Adicionar ao catálogo</span>
+            </div>
+        </div>
+        <i class="bi bi-arrow-right text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+    </a>
+
+    <a href="/usuarios"
+       class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl p-4 shadow-sm transition flex items-center justify-between group">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i class="bi bi-person-plus text-lg"></i>
+            </div>
+            <div>
+                <span class="font-semibold block text-sm">Cadastrar Usuário</span>
+                <span class="text-xs text-slate-500">Novo leitor da biblioteca</span>
+            </div>
+        </div>
+        <i class="bi bi-arrow-right text-slate-400 group-hover:translate-x-1 transition-transform"></i>
+    </a>
+</section>
+
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <i class="bi bi-bell text-amber-500"></i>
+            <h2 class="text-base font-bold text-slate-800 m-0">Atenção Imediata (Atrasados e Vencendo Hoje)</h2>
+        </div>
+        <a href="/emprestimos" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">
+            Ver todos os ativos
+        </a>
+    </div>
+
+    <?php if (empty($pendencias)): ?>
+        <div class="p-8 text-center">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto mb-3 flex items-center justify-center">
+                <i class="bi bi-check2-circle text-2xl"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-700 mb-1">Nenhum empréstimo atrasado ou vencendo hoje</p>
+            <p class="text-xs text-slate-400 m-0">Todas as devoluções estão dentro do prazo.</p>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-sm">
+                <thead class="bg-slate-50 text-slate-600 text-xs uppercase">
+                    <tr>
+                        <th class="px-5 py-3 font-semibold">Usuário</th>
+                        <th class="px-5 py-3 font-semibold">Livro</th>
+                        <th class="px-5 py-3 font-semibold">Previsão Devolução</th>
+                        <th class="px-5 py-3 font-semibold">Situação</th>
+                        <th class="px-5 py-3 font-semibold text-end">Ação</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php foreach ($pendencias as $item): ?>
+                        <?php $atrasado = ((int) $item['dias_atraso'] > 0); ?>
+                        <tr>
+                            <td class="px-5 py-3.5 font-medium text-slate-800">
+                                <?= htmlspecialchars($item['usuario_nome']) ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-600">
+                                <?= htmlspecialchars($item['livro_titulo']) ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-slate-600">
+                                <?= date('d/m/Y', strtotime($item['data_prevista'])) ?>
+                            </td>
+                            <td class="px-5 py-3.5">
+                                <?php if ($atrasado): ?>
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1">
+                                        Atrasado (<?= (int) $item['dias_atraso'] ?>d)
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1">
+                                        Vence hoje
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-5 py-3.5 text-end">
+                                <a href="/emprestimos"
+                                   class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">
+                                    <i class="bi bi-check2"></i>
+                                    <span>Devolver</span>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</section>
+
+<?php $this->layout('rodape'); ?>

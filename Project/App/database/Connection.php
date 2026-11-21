@@ -4,13 +4,13 @@ namespace App;
 
 abstract class Connection {
     private $host = 'localhost:3306';
-    private $bd_name = 'tcc';
+    private $bd_name = 'bd_bibliodesk';
     private $usuario = 'root';
     private $senha = 'root';
     
     function getDB(){
         try {
-            $Mysql = new \mysqli($this->host, $this->usuario, $this->senha, $this->bd_name,);
+            $Mysql = new \mysqli($this->host, $this->usuario, $this->senha, $this->bd_name);
 
             return $Mysql;
         } catch (\Throwable $th) {
