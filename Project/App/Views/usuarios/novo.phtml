@@ -1,0 +1,142 @@
+<?php $this->layout('topo'); ?>
+
+<?php
+$origem = $this->view->origem ?? '';
+$rotaCancelar = $origem === 'emprestimo' ? '/emprestimos/novo' : '/usuarios';
+?>
+
+<style>
+    .modern-field {
+        background-color: #FFFFFF !important;
+        border: 1px solid rgba(0, 0, 0, .16) !important;
+        border-radius: 8px !important;
+        color: var(--text, #111827) !important;
+        padding: .65rem .9rem !important;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .modern-field:focus {
+        border-color: var(--ink, #111827) !important;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, .07) !important;
+    }
+    .btn-modern-primary {
+        background-color: var(--ink, #111827);
+        color: #FFFFFF !important;
+        border: none;
+        border-radius: 8px;
+        transition: background-color .15s ease, transform .1s ease;
+    }
+    .btn-modern-primary:hover {
+        background-color: var(--ink-3, #1F2937);
+        color: #FFFFFF !important;
+    }
+    .btn-modern-ghost {
+        background-color: transparent;
+        color: var(--text-soft, #4B5563) !important;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color .15s ease, color .15s ease;
+    }
+    .btn-modern-ghost:hover {
+        background-color: rgba(0, 0, 0, .06);
+        color: var(--text, #111827) !important;
+    }
+</style>
+
+<section class="max-w-xl mx-auto py-2">
+    <?php if (!empty($this->view->erro)): ?>
+        <div class="alert alert-danger alert-dismissible fade show rounded-lg text-sm flex items-center gap-2 mb-6" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span><?= htmlspecialchars($this->view->erro) ?></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    <?php endif; ?>
+
+    <div class="mb-7">
+        <div class="flex items-center gap-3 mb-1.5">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0" style="background:var(--ink, #111827);">
+                <i class="bi bi-person-plus text-base"></i>
+            </div>
+            <h2 class="font-brand font-bold text-xl m-0" style="color:var(--text, #111827);">Novo Usuário</h2>
+        </div>
+        <p class="text-sm m-0" style="color:var(--text-soft, #6B7280);">
+            Preencha os dados do leitor para liberar a retirada de livros no balcão.
+        </p>
+    </div>
+
+    <form action="/usuarios/cadastrar" method="POST" class="space-y-5">
+        <input type="hidden" name="origem" value="<?= htmlspecialchars($origem) ?>">
+
+        <div>
+            <label for="nome" class="block text-sm font-semibold mb-1.5" style="color:var(--text, #111827);">
+                Nome Completo *
+            </label>
+            <input
+                type="text"
+                id="nome"
+                name="nome"
+                class="form-control modern-field text-sm"
+                placeholder="Ex.: Ana Paula Souza"
+                required
+            >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="documento" class="block text-sm font-semibold mb-1.5" style="color:var(--text, #111827);">
+                    Documento / Matrícula *
+                </label>
+                <input
+                    type="text"
+                    id="documento"
+                    name="documento"
+                    class="form-control modern-field text-sm"
+                    placeholder="CPF, RG ou matrícula"
+                    required
+                >
+            </div>
+
+            <div>
+                <label for="telefone" class="block text-sm font-semibold mb-1.5" style="color:var(--text, #111827);">
+                    Telefone / WhatsApp *
+                </label>
+                <input
+                    type="text"
+                    id="telefone"
+                    name="telefone"
+                    class="form-control modern-field text-sm"
+                    placeholder="(00) 00000-0000"
+                    required
+                >
+            </div>
+        </div>
+
+        <div>
+            <label for="observacao" class="block text-sm font-semibold mb-1.5" style="color:var(--text, #111827);">
+                Observação (opcional)
+            </label>
+            <input
+                type="text"
+                id="observacao"
+                name="observacao"
+                class="form-control modern-field text-sm"
+                placeholder="Turma, curso, setor ou observação rápida"
+            >
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3">
+            <a href="<?= $rotaCancelar ?>" class="btn-modern-ghost font-medium py-2.5 px-4 text-sm">
+                Cancelar
+            </a>
+            <button
+                type="submit"
+                class="btn-modern-primary font-semibold py-2.5 px-6 text-sm inline-flex items-center gap-2 shadow-sm"
+            >
+                <i class="bi bi-check2"></i>
+                <span>Cadastrar Usuário</span>
+            </button>
+        </div>
+    </form>
+</section>
+
+<?php $this->layout('rodape'); ?>

@@ -6,7 +6,7 @@ $busca = $this->view->busca ?? '';
 ?>
 
 <style>
-    .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
+    .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); text-decoration:none; }
     .btn-ink:hover{ background:var(--ink-3); border-color:var(--ink-3); color:#fff; }
     .btn-line{ border:1px solid rgba(0,0,0,.14); color:var(--text); background:rgba(0,0,0,.04); transition:background .15s, border-color .15s; }
     .btn-line:hover{ background:rgba(0,0,0,.09); border-color:rgba(0,0,0,.22); color:var(--text); }
@@ -73,15 +73,13 @@ $busca = $this->view->busca ?? '';
         </div>
     </form>
 
-    <button
-        type="button"
+    <a
+        href="/usuarios/novo"
         class="btn-ink text-sm font-semibold px-4 py-2.5 rounded transition inline-flex items-center justify-center gap-2"
-        data-bs-toggle="modal"
-        data-bs-target="#modalCadastrarUsuario"
     >
         <i class="bi bi-person-plus"></i>
         <span>Novo Usuário</span>
-    </button>
+    </a>
 </section>
 
 <section class="card-paper overflow-hidden">
@@ -182,43 +180,6 @@ $busca = $this->view->busca ?? '';
         </div>
     <?php endif; ?>
 </section>
-
-<div class="modal fade" id="modalCadastrarUsuario" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="/usuarios/cadastrar" method="POST" class="modal-content modal-paper border-0">
-            <div class="modal-header modal-head-paper px-6 py-4">
-                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text);">Cadastrar Novo Usuário</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold label-field mb-1">Nome Completo *</label>
-                    <input type="text" name="nome" class="form-control field text-sm" required>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold label-field mb-1">Documento / Matrícula *</label>
-                        <input type="text" name="documento" class="form-control field text-sm" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold label-field mb-1">Telefone / WhatsApp *</label>
-                        <input type="text" name="telefone" class="form-control field text-sm" required>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold label-field mb-1">Observação (opcional)</label>
-                    <input type="text" name="observacao" class="form-control field text-sm" placeholder="Turma, setor ou observação rápida">
-                </div>
-            </div>
-            <div class="modal-footer modal-foot-paper px-6 py-3">
-                <button type="button" class="btn btn-line text-sm rounded" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn-ink text-sm font-semibold px-4 py-2 rounded">
-                    Salvar Usuário
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

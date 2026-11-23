@@ -73,6 +73,13 @@ class Route extends BootStrap
             'middleware' => 'AuthMiddleware'
         );
 
+        $routes['usuarios_novo'] = array(
+            'route' => '/usuarios/novo',
+            'controller' => 'UsuariosController',
+            'action' => 'novo',
+            'middleware' => 'AuthMiddleware'
+        );
+
         $routes['usuarios_cadastrar'] = array(
             'route' => '/usuarios/cadastrar',
             'controller' => 'UsuariosController',

@@ -35,20 +35,34 @@ class UsuariosController extends Action
         $this->render('usuarios.index');
     }
 
+    public function novo()
+    {
+        $this->view->tituloPagina = 'Cadastrar Usuário';
+        $this->view->paginaAtiva = 'usuarios';
+        $this->view->origem = trim($_GET['origem'] ?? '');
+        $this->view->erro = $_SESSION['flash_erro'] ?? null;
+
+        unset($_SESSION['flash_erro']);
+
+        $this->render('usuarios.novo');
+    }
+
     public function cadastrar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/usuarios');
+            $this->redirect('/usuarios/novo');
             exit;
         }
 
         $nome = trim($_POST['nome'] ?? '');
         $documento = trim($_POST['documento'] ?? '');
         $telefone = trim($_POST['telefone'] ?? '');
+        $origem = trim($_POST['origem'] ?? '');
+        $rotaRetornoErro = $origem === 'emprestimo' ? '/usuarios/novo?origem=emprestimo' : '/usuarios/novo';
 
         if ($nome === '' || $documento === '' || $telefone === '') {
             $_SESSION['flash_erro'] = 'Preencha nome, documento e telefone do usuário.';
-            $this->redirect('/usuarios');
+            $this->redirect($rotaRetornoErro);
             exit;
         }
 
@@ -57,11 +71,16 @@ class UsuariosController extends Action
 
         if ($salvou) {
             $_SESSION['flash_sucesso'] = 'Usuário cadastrado com sucesso.';
-        } else {
-            $_SESSION['flash_erro'] = 'Não foi possível cadastrar o usuário. Verifique se o documento já existe.';
+            if ($origem === 'emprestimo') {
+                $this->redirect('/emprestimos/novo');
+                exit;
+            }
+            $this->redirect('/usuarios');
+            exit;
         }
 
-        $this->redirect('/usuarios');
+        $_SESSION['flash_erro'] = 'Não foi possível cadastrar o usuário. Verifique se o documento já existe.';
+        $this->redirect($rotaRetornoErro);
         exit;
     }
 

@@ -56,6 +56,14 @@ $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime
 </style>
 
 <section class="max-w-xl mx-auto py-2">
+    <?php if (!empty($this->view->sucesso)): ?>
+        <div class="alert alert-success alert-dismissible fade show rounded-lg text-sm flex items-center gap-2 mb-6" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <span><?= htmlspecialchars($this->view->sucesso) ?></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    <?php endif; ?>
+
     <?php if (!empty($this->view->erro)): ?>
         <div class="alert alert-danger alert-dismissible fade show rounded-lg text-sm flex items-center gap-2 mb-6" role="alert">
             <i class="bi bi-exclamation-circle-fill"></i>
@@ -82,7 +90,7 @@ $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime
                 <label for="id_usuario" class="text-sm font-semibold" style="color:var(--text, #111827);">
                     Usuário / Leitor
                 </label>
-                <a href="/usuarios" class="text-xs modern-link">
+                <a href="/usuarios/novo?origem=emprestimo" class="text-xs modern-link">
                     + Novo usuário
                 </a>
             </div>
