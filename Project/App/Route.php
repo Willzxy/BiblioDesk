@@ -6,10 +6,8 @@ require_once '../MinhaFramework/Init/Bootstrap.php';
 
 use MF\BootStrap;
 
-class Route extends BootStrap
-{
-    function InitRoutes()
-    {
+class Route extends BootStrap{
+    function InitRoutes(){
         $routes['login'] = array(
             'route' => '/',
             'controller' => 'AuthController',
