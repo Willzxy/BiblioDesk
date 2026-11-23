@@ -3,24 +3,25 @@
 namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
-require_once '../App/Models/tb_usuarios.php';
+require_once __DIR__ . '/../Factories/UsuarioModelFactory.php';
 
-use App\Models\tb_usuarios;
+use App\Factories\UsuarioModelFactory;
 use MF\Action;
 
 class UsuariosController extends Action
 {
-    public function __construct()
-    {
+    private UsuarioModelFactory $usuarioFactory;
+
+    public function __construct(){
         parent::__construct();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->usuarioFactory = new UsuarioModelFactory();
     }
 
-    public function index()
-    {
-        $usuariosModel = new tb_usuarios();
+    public function index(){
+        $usuariosModel = $this->usuarioFactory->criarModel();
         $busca = trim($_GET['busca'] ?? '');
 
         $this->view->tituloPagina = 'Usuários / Leitores';
@@ -35,8 +36,7 @@ class UsuariosController extends Action
         $this->render('usuarios.index');
     }
 
-    public function buscarJson()
-    {
+    public function buscarJson(){
         header('Content-Type: application/json; charset=utf-8');
 
         $termo = trim($_GET['q'] ?? '');
@@ -45,15 +45,14 @@ class UsuariosController extends Action
             exit;
         }
 
-        $usuariosModel = new tb_usuarios();
+        $usuariosModel = $this->usuarioFactory->criarModel();
         $usuarios = $usuariosModel->buscarRapido($termo, 8);
 
         echo json_encode($usuarios, JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    public function novo()
-    {
+    public function novo(){
         $this->view->tituloPagina = 'Cadastrar Usuário';
         $this->view->paginaAtiva = 'usuarios';
         $this->view->origem = trim($_GET['origem'] ?? '');
@@ -64,8 +63,7 @@ class UsuariosController extends Action
         $this->render('usuarios.novo');
     }
 
-    public function cadastrar()
-    {
+    public function cadastrar(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/usuarios/novo');
             exit;
@@ -83,7 +81,7 @@ class UsuariosController extends Action
             exit;
         }
 
-        $usuariosModel = new tb_usuarios();
+        $usuariosModel = $this->usuarioFactory->criarModel();
         $salvou = $usuariosModel->cadastrar($_POST);
 
         if ($salvou) {
@@ -101,8 +99,7 @@ class UsuariosController extends Action
         exit;
     }
 
-    public function editar()
-    {
+    public function editar(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/usuarios');
             exit;
@@ -119,7 +116,7 @@ class UsuariosController extends Action
             exit;
         }
 
-        $usuariosModel = new tb_usuarios();
+        $usuariosModel = $this->usuarioFactory->criarModel();
         $atualizou = $usuariosModel->atualizar($id, $_POST);
 
         if ($atualizou) {
@@ -132,8 +129,7 @@ class UsuariosController extends Action
         exit;
     }
 
-    public function excluir()
-    {
+    public function excluir(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/usuarios');
             exit;
@@ -147,7 +143,7 @@ class UsuariosController extends Action
             exit;
         }
 
-        $usuariosModel = new tb_usuarios();
+        $usuariosModel = $this->usuarioFactory->criarModel();
         $excluiu = $usuariosModel->excluir($id);
 
         if ($excluiu) {

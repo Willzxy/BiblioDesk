@@ -2,14 +2,14 @@
 
 namespace MF;
 
-require_once '../App/database/Connection.php';
+require_once __DIR__ . '/../../App/database/Connection.php';
 
 use App\Connection;
 
-class Models extends Connection {
+class Models {
     protected $db;
 
-    function __construct(){
-        $this->db = Connection::getDB();
+    public function __construct() {
+        $this->db = Connection::getInstance()->getDB();
     }
 }

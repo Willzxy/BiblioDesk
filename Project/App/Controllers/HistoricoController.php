@@ -3,24 +3,23 @@
 namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
-require_once '../App/Models/tb_emprestimos.php';
+require_once __DIR__ . '/../Factories/EmprestimoModelFactory.php';
 
-use App\Models\tb_emprestimos;
+use App\Factories\EmprestimoModelFactory;
 use MF\Action;
 
-class HistoricoController extends Action
-{
-    public function __construct()
-    {
+class HistoricoController extends Action{
+    private EmprestimoModelFactory $emprestimoFactory;
+    public function __construct(){
         parent::__construct();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->emprestimoFactory = new EmprestimoModelFactory();
     }
 
-    public function index()
-    {
-        $emprestimosModel = new tb_emprestimos();
+    public function index(){
+        $emprestimosModel = $this->emprestimoFactory->criarModel();
         $filtro = $_GET['filtro'] ?? 'TODOS';
         $busca = trim($_GET['busca'] ?? '');
 

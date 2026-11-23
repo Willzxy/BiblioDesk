@@ -3,24 +3,24 @@
 namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
-require_once '../App/Models/tb_livros.php';
+require_once __DIR__ . '/../Factories/LivroModelFactory.php';
 
-use App\Models\tb_livros;
+use App\Factories\LivroModelFactory;
 use MF\Action;
 
-class LivrosController extends Action
-{
-    public function __construct()
-    {
+class LivrosController extends Action{
+    private LivroModelFactory $livroFactory;
+
+    public function __construct(){
         parent::__construct();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->livroFactory = new LivroModelFactory();
     }
 
-    public function index()
-    {
-        $livrosModel = new tb_livros();
+    public function index(){
+        $livrosModel = $this->livroFactory->criarModel();
         $busca = trim($_GET['busca'] ?? '');
 
         $this->view->tituloPagina = 'Catálogo de Livros';
@@ -35,8 +35,7 @@ class LivrosController extends Action
         $this->render('livros.index');
     }
 
-    public function buscarJson()
-    {
+    public function buscarJson(){
         header('Content-Type: application/json; charset=utf-8');
 
         $termo = trim($_GET['q'] ?? '');
@@ -45,15 +44,14 @@ class LivrosController extends Action
             exit;
         }
 
-        $livrosModel = new tb_livros();
+        $livrosModel = $this->livroFactory->criarModel();
         $livros = $livrosModel->buscarRapido($termo, 8);
 
         echo json_encode($livros, JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    public function cadastrar()
-    {
+    public function cadastrar(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/livros');
             exit;
@@ -70,7 +68,7 @@ class LivrosController extends Action
             exit;
         }
 
-        $livrosModel = new tb_livros();
+        $livrosModel = $this->livroFactory->criarModel();
         $salvou = $livrosModel->cadastrar($_POST);
 
         if ($salvou) {
@@ -83,8 +81,7 @@ class LivrosController extends Action
         exit;
     }
 
-    public function editar()
-    {
+    public function editar(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/livros');
             exit;
@@ -102,7 +99,7 @@ class LivrosController extends Action
             exit;
         }
 
-        $livrosModel = new tb_livros();
+        $livrosModel = $this->livroFactory->criarModel();
         $atualizou = $livrosModel->atualizar($id, $_POST);
 
         if ($atualizou) {
@@ -115,8 +112,7 @@ class LivrosController extends Action
         exit;
     }
 
-    public function excluir()
-    {
+    public function excluir(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/livros');
             exit;
@@ -130,7 +126,7 @@ class LivrosController extends Action
             exit;
         }
 
-        $livrosModel = new tb_livros();
+        $livrosModel = $this->livroFactory->criarModel();
         $excluiu = $livrosModel->excluir($id);
 
         if ($excluiu) {

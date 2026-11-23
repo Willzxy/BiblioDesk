@@ -3,23 +3,36 @@
 namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
-require_once '../App/Models/tb_emprestimos.php';
+require_once __DIR__ . '/../Factories/EmprestimoModelFactory.php';
+require_once __DIR__ . '/../Observers/EmprestimoSubject.php';
+require_once __DIR__ . '/../Observers/AuditoriaLogObserver.php';
+require_once __DIR__ . '/../Observers/EstoqueAlertaObserver.php';
 
-use App\Models\tb_emprestimos;
+use App\Factories\EmprestimoModelFactory;
+use App\Observers\AuditoriaLogObserver;
+use App\Observers\EmprestimoSubject;
+use App\Observers\EstoqueAlertaObserver;
 use MF\Action;
 
-class EmprestimosController extends Action
-{
-    public function __construct()
-    {
+class EmprestimosController extends Action{
+    private EmprestimoModelFactory $emprestimoFactory;
+
+    public function __construct(){
         parent::__construct();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $this->emprestimoFactory = new EmprestimoModelFactory();
     }
 
-    public function novo()
-    {
+    private function criarSubject(): EmprestimoSubject{
+        $subject = new EmprestimoSubject();
+        $subject->anexar(new AuditoriaLogObserver());
+        $subject->anexar(new EstoqueAlertaObserver());
+        return $subject;
+    }
+
+    public function novo(){
         $this->view->tituloPagina = 'Registrar Empréstimo';
         $this->view->paginaAtiva = 'novo-emprestimo';
         $this->view->dataHoje = date('Y-m-d');
@@ -32,8 +45,7 @@ class EmprestimosController extends Action
         $this->render('emprestimos.novo');
     }
 
-    public function registrar()
-    {
+    public function registrar(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/emprestimos/novo');
             exit;
@@ -56,11 +68,17 @@ class EmprestimosController extends Action
             exit;
         }
 
-        $emprestimosModel = new tb_emprestimos();
+        $emprestimosModel = $this->emprestimoFactory->criarModel();
         $registrou = $emprestimosModel->registrar($idUsuario, $idLivro, $dataEmprestimo, $dataPrevista);
 
         if ($registrou) {
             $_SESSION['flash_sucesso'] = 'Empréstimo registrado com sucesso!';
+            $this->criarSubject()->notificar('EMPRESTIMO_REGISTRADO', [
+                'id_usuario' => $idUsuario,
+                'id_livro' => $idLivro,
+                'data_emprestimo' => $dataEmprestimo,
+                'data_prevista' => $dataPrevista
+            ]);
             $this->redirect('/emprestimos');
             exit;
         }
@@ -70,9 +88,8 @@ class EmprestimosController extends Action
         exit;
     }
 
-    public function index()
-    {
-        $emprestimosModel = new tb_emprestimos();
+    public function index(){
+        $emprestimosModel = $this->emprestimoFactory->criarModel();
         $filtro = $_GET['filtro'] ?? 'TODOS';
         $busca = trim($_GET['busca'] ?? '');
         $somenteAtrasados = ($filtro === 'ATRASADOS');
@@ -92,8 +109,7 @@ class EmprestimosController extends Action
         $this->render('emprestimos.index');
     }
 
-    public function devolver()
-    {
+    public function devolver(){
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/emprestimos');
             exit;
@@ -109,11 +125,15 @@ class EmprestimosController extends Action
             exit;
         }
 
-        $emprestimosModel = new tb_emprestimos();
+        $emprestimosModel = $this->emprestimoFactory->criarModel();
         $devolveu = $emprestimosModel->registrarDevolucao($idEmprestimo);
 
         if ($devolveu) {
             $_SESSION['flash_sucesso'] = 'Devolução registrada e exemplar devolvido ao estoque.';
+            $this->criarSubject()->notificar('DEVOLUCAO_REGISTRADA', [
+                'id_emprestimo' => $idEmprestimo,
+                'origem' => $origem !== '' ? $origem : 'emprestimos'
+            ]);
         } else {
             $_SESSION['flash_erro'] = 'Não foi possível registrar a devolução deste empréstimo.';
         }

@@ -3,30 +3,27 @@
 namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
-require_once '../App/Models/tb_livros.php';
-require_once '../App/Models/tb_usuarios.php';
-require_once '../App/Models/tb_emprestimos.php';
+require_once __DIR__ . '/../Factories/LivroModelFactory.php';
+require_once __DIR__ . '/../Factories/UsuarioModelFactory.php';
+require_once __DIR__ . '/../Factories/EmprestimoModelFactory.php';
 
-use App\Models\tb_emprestimos;
-use App\Models\tb_livros;
-use App\Models\tb_usuarios;
+use App\Factories\EmprestimoModelFactory;
+use App\Factories\LivroModelFactory;
+use App\Factories\UsuarioModelFactory;
 use MF\Action;
 
-class DashboardController extends Action
-{
-    public function __construct()
-    {
+class DashboardController extends Action{
+    public function __construct(){
         parent::__construct();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    public function index()
-    {
-        $livrosModel = new tb_livros();
-        $usuariosModel = new tb_usuarios();
-        $emprestimosModel = new tb_emprestimos();
+    public function index(){
+        $livrosModel = (new LivroModelFactory())->criarModel();
+        $usuariosModel = (new UsuarioModelFactory())->criarModel();
+        $emprestimosModel = (new EmprestimoModelFactory())->criarModel();
 
         $this->view->tituloPagina = 'Painel do Bibliotecário';
         $this->view->paginaAtiva = 'dashboard';
