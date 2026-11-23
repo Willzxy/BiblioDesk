@@ -6,31 +6,31 @@ $busca = $this->view->busca ?? '';
 ?>
 
 <style>
-    .btn-ink{ background:var(--ink); color:#fff; border:1px solid var(--ink); }
-    .btn-ink:hover{ background:var(--ink-3); border-color:var(--ink-3); color:#fff; }
-    .btn-line{ border:1px solid rgba(0,0,0,.14); color:var(--text); background:rgba(0,0,0,.04); transition:background .15s, border-color .15s; }
-    .btn-line:hover{ background:rgba(0,0,0,.09); border-color:rgba(0,0,0,.22); color:var(--text); }
-    .btn-brick{ background:var(--brick); color:#fff; border:1px solid var(--brick); }
-    .btn-brick:hover{ background:#73372A; border-color:#73372A; }
+    .btn-ink{ background:var(--ink, #111827); color:#fff; border:1px solid var(--ink, #111827); }
+    .btn-ink:hover{ background:var(--ink-3, #1F2937); border-color:var(--ink-3, #1F2937); color:#fff; }
+    .btn-line{ border:1px solid rgba(0,0,0,.14); color:var(--text, #111827); background:rgba(0,0,0,.04); transition:background .15s, border-color .15s; }
+    .btn-line:hover{ background:rgba(0,0,0,.09); border-color:rgba(0,0,0,.22); color:var(--text, #111827); }
+    .btn-brick{ background-color:#73372A !important; color:#FFFFFF !important; border:1px solid #73372A !important; transition:background .15s, border-color .15s; }
+    .btn-brick:hover{ background-color:#5C2B21 !important; border-color:#5C2B21 !important; color:#FFFFFF !important; }
     .ring-icon{ border:1.5px solid var(--brass, #9A7A35); color:#6E5522; background:rgba(255,255,255,.65); }
-    .ring-icon-brick{ border:1.5px solid var(--brick, #8C4432); color:var(--brick, #8C4432); background:rgba(140,68,50,.08); }
+    .ring-icon-brick{ border:1.5px solid #73372A; color:#73372A; background:rgba(115,55,42,.10); }
     .tag{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .65rem; border-radius:3px; font-size:.72rem; font-weight:600; border-left-width:3px; border-left-style:solid; }
     .tag-ok{ background:#E7EDE2; color:#3F5A33; border-left-color:#6E8F57; }
-    .tag-warn{ background:#F3E3DC; color:var(--brick, #8C4432); border-left-color:var(--brick, #8C4432); }
-    .tag-off{ background:#EDEAE0; color:var(--text-soft); border-left-color:var(--line); }
+    .tag-warn{ background:#F3E3DC; color:#73372A; border-left-color:#73372A; }
+    .tag-off{ background:#EDEAE0; color:var(--text-soft, #4B5563); border-left-color:var(--line, #D1D5DB); }
     .tag-neutral{ background:rgba(154,122,53,.10); color:#5C471C; border-left-color:var(--brass, #9A7A35); font-weight:600; }
-    .field{ border:1px solid var(--line, #D1D5DB) !important; border-radius:4px !important; color:var(--text); background-color:#FFFFFF !important; }
+    .field{ border:1px solid var(--line, #D1D5DB) !important; border-radius:4px !important; color:var(--text, #111827); background-color:#FFFFFF !important; }
     .field:focus{ border-color:var(--brass, #9A7A35) !important; box-shadow:0 0 0 .18rem rgba(154,122,53,.18) !important; }
-    .card-paper{ background:var(--card); border:1px solid var(--line); border-radius:6px; }
+    .card-paper{ background:var(--card, #FFFFFF); border:1px solid var(--line, #E5E7EB); border-radius:6px; }
     table.lib thead th{ --bs-table-bg:#000000; --bs-table-color:#FFFFFF; background-color:#000000 !important; color:#FFFFFF !important; font-weight:700; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:2px solid var(--brass, #9A7A35) !important; }
     table.lib tbody tr{ border-bottom:1px solid var(--line, #E5E7EB); }
     table.lib tbody tr:nth-child(odd) > td{ --bs-table-bg:#F3F4F6; background-color:#F3F4F6 !important; }
     table.lib tbody tr:nth-child(even) > td{ --bs-table-bg:#FFFFFF; background-color:#FFFFFF !important; }
     table.lib tbody tr:hover > td{ --bs-table-bg:rgba(154,122,53,.10); background-color:rgba(154,122,53,.10) !important; }
-    .modal-paper{ background:var(--card, #FFFFFF); border:1px solid var(--line); border-radius:8px; }
-    .modal-head-paper{ border-bottom:1px solid var(--line); }
-    .modal-foot-paper{ border-top:1px solid var(--line); }
-    .label-field{ color:var(--text-soft); }
+    .modal-paper{ background:var(--card, #FFFFFF); border:1px solid var(--line, #E5E7EB); border-radius:8px; }
+    .modal-head-paper{ border-bottom:1px solid var(--line, #E5E7EB); }
+    .modal-foot-paper{ border-top:1px solid var(--line, #E5E7EB); }
+    .label-field{ color:var(--text-soft, #4B5563); }
 </style>
 
 <?php if (!empty($this->view->sucesso)): ?>
@@ -91,8 +91,8 @@ $busca = $this->view->busca ?? '';
             <div class="w-12 h-12 rounded-full ring-icon mx-auto mb-3 flex items-center justify-center">
                 <i class="bi bi-book text-2xl"></i>
             </div>
-            <p class="text-sm font-medium mb-1" style="color:var(--text);">Nenhum livro encontrado</p>
-            <p class="text-xs m-0" style="color:var(--text-soft);">Cadastre um novo exemplar ou altere o filtro de busca.</p>
+            <p class="text-sm font-medium mb-1" style="color:var(--text, #111827);">Nenhum livro encontrado</p>
+            <p class="text-xs m-0" style="color:var(--text-soft, #4B5563);">Cadastre um novo exemplar ou altere o filtro de busca.</p>
         </div>
     <?php else: ?>
         <div class="table-responsive">
@@ -111,19 +111,19 @@ $busca = $this->view->busca ?? '';
                     <?php foreach ($livros as $livro): ?>
                         <?php $disponivel = (int) $livro['quantidade_disponivel']; ?>
                         <tr>
-                            <td class="px-5 py-3.5 font-mono text-xs" style="color:var(--text-soft);">
+                            <td class="px-5 py-3.5 font-mono text-xs" style="color:var(--text-soft, #4B5563);">
                                 <?= htmlspecialchars($livro['codigo_isbn']) ?>
                             </td>
                             <td class="px-5 py-3.5">
-                                <div class="font-semibold" style="color:var(--text);"><?= htmlspecialchars($livro['titulo']) ?></div>
-                                <div class="text-xs" style="color:var(--text-soft);"><?= htmlspecialchars($livro['autor']) ?></div>
+                                <div class="font-semibold" style="color:var(--text, #111827);"><?= htmlspecialchars($livro['titulo']) ?></div>
+                                <div class="text-xs" style="color:var(--text-soft, #4B5563);"><?= htmlspecialchars($livro['autor']) ?></div>
                             </td>
                             <td class="px-5 py-3.5">
                                 <span class="tag tag-neutral">
                                     <?= htmlspecialchars($livro['categoria']) ?>
                                 </span>
                             </td>
-                            <td class="px-5 py-3.5 text-center font-medium" style="color:var(--text);">
+                            <td class="px-5 py-3.5 text-center font-medium" style="color:var(--text, #111827);">
                                 <?= (int) $livro['quantidade_total'] ?>
                             </td>
                             <td class="px-5 py-3.5 text-center">
@@ -158,7 +158,7 @@ $busca = $this->view->busca ?? '';
                                     <button
                                         type="button"
                                         class="btn btn-sm rounded btn-excluir-livro"
-                                        style="border:1px solid var(--brick); color:var(--brick); background:rgba(140,68,50,.06);"
+                                        style="border:1px solid #73372A; color:#73372A; background:rgba(115,55,42,.08);"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalExcluirLivro"
                                         data-id="<?= (int) $livro['id'] ?>"
@@ -181,7 +181,7 @@ $busca = $this->view->busca ?? '';
     <div class="modal-dialog modal-dialog-centered">
         <form action="/livros/cadastrar" method="POST" class="modal-content modal-paper border-0">
             <div class="modal-header modal-head-paper px-6 py-4">
-                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text);">Cadastrar Novo Livro</h5>
+                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text, #111827);">Cadastrar Novo Livro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-6 space-y-4">
@@ -225,7 +225,7 @@ $busca = $this->view->busca ?? '';
         <form action="/livros/editar" method="POST" class="modal-content modal-paper border-0">
             <input type="hidden" name="id" id="editLivroId">
             <div class="modal-header modal-head-paper px-6 py-4">
-                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text);">Editar Livro</h5>
+                <h5 class="modal-title font-brand font-semibold text-base" style="color:var(--text, #111827);">Editar Livro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body p-6 space-y-4">
@@ -276,9 +276,9 @@ $busca = $this->view->busca ?? '';
                 <div class="w-12 h-12 rounded-full ring-icon-brick mx-auto mb-3 flex items-center justify-center">
                     <i class="bi bi-trash text-xl"></i>
                 </div>
-                <h5 class="font-brand font-semibold text-base mb-1" style="color:var(--text);">Excluir Livro?</h5>
-                <p class="text-xs mb-4" style="color:var(--text-soft);">
-                    Deseja remover <strong id="excluirLivroTitulo" style="color:var(--text);"></strong> do catálogo?
+                <h5 class="font-brand font-semibold text-base mb-1" style="color:var(--text, #111827);">Excluir Livro?</h5>
+                <p class="text-xs mb-4" style="color:var(--text-soft, #4B5563);">
+                    Deseja remover <strong id="excluirLivroTitulo" style="color:var(--text, #111827);"></strong> do catálogo?
                 </p>
                 <div class="flex gap-2 justify-center">
                     <button type="button" class="btn btn-line text-sm rounded flex-1" data-bs-dismiss="modal">Cancelar</button>
