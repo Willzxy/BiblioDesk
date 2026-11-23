@@ -1,2 +1,7 @@
 [2026-11-23 22:33:33] EMPRESTIMO_REGISTRADO | {"id_usuario":13,"id_livro":31,"data_emprestimo":"2026-11-23","data_prevista":"2026-11-30"}
 [2026-11-23 22:34:29] DEVOLUCAO_REGISTRADA | {"id_emprestimo":19,"origem":"emprestimos"}
+[2026-11-23 23:55:16] EMPRESTIMO_REGISTRADO | {"id_usuario":11,"id_livro":37,"data_emprestimo":"2026-11-23","data_prevista":"2026-11-23"}
+[2026-11-23 23:55:43] DEVOLUCAO_REGISTRADA | {"id_emprestimo":17,"origem":"emprestimos"}
+[2026-11-24 00:02:26] EMPRESTIMO_REGISTRADO | {"id_usuario":12,"id_livro":38,"data_emprestimo":"2026-11-23","data_prevista":"2026-11-23"}
+[2026-11-24 00:03:15] DEVOLUCAO_REGISTRADA | {"id_emprestimo":18,"origem":"dashboard"}
+[2026-11-24 00:03:21] DEVOLUCAO_REGISTRADA | {"id_emprestimo":5,"origem":"dashboard"}

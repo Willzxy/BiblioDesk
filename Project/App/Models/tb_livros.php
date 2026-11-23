@@ -193,16 +193,42 @@ class tb_livros extends Models
 
     public function excluir(int $id): bool
     {
+        if (!$this->db) {
+            return false;
+        }
+
+        $this->db->begin_transaction();
+
         try {
-            if (!$this->db) {
+            $stmtAtivos = $this->db->prepare("SELECT COUNT(*) AS total FROM tb_emprestimos WHERE id_livro = ? AND status = 'ATIVO'");
+            $stmtAtivos->bind_param('i', $id);
+            $stmtAtivos->execute();
+            $resultado = $stmtAtivos->get_result();
+            $row = $resultado ? $resultado->fetch_assoc() : null;
+
+            if ($row && (int) $row['total'] > 0) {
+                $this->db->rollback();
                 return false;
             }
 
-            $stmt = $this->db->prepare("DELETE FROM tb_livros WHERE id = ?");
-            $stmt->bind_param('i', $id);
+            $stmtHistorico = $this->db->prepare("DELETE FROM tb_emprestimos WHERE id_livro = ? AND status = 'DEVOLVIDO'");
+            $stmtHistorico->bind_param('i', $id);
+            if (!$stmtHistorico->execute()) {
+                $this->db->rollback();
+                return false;
+            }
 
-            return $stmt->execute();
+            $stmtLivro = $this->db->prepare("DELETE FROM tb_livros WHERE id = ?");
+            $stmtLivro->bind_param('i', $id);
+            if (!$stmtLivro->execute() || $stmtLivro->affected_rows === 0) {
+                $this->db->rollback();
+                return false;
+            }
+
+            $this->db->commit();
+            return true;
         } catch (\Throwable $th) {
+            $this->db->rollback();
             return false;
         }
     }

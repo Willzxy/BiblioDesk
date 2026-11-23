@@ -149,7 +149,7 @@ class UsuariosController extends Action
         if ($excluiu) {
             $_SESSION['flash_sucesso'] = 'Usuário excluído com sucesso.';
         } else {
-            $_SESSION['flash_erro'] = 'Não é possível excluir este usuário porque possui histórico de empréstimos.';
+            $_SESSION['flash_erro'] = 'Não é possível excluir este usuário porque existem empréstimos ativos vinculados a ele.';
         }
 
         $this->redirect('/usuarios');

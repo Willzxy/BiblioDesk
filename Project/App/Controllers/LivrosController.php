@@ -132,7 +132,7 @@ class LivrosController extends Action{
         if ($excluiu) {
             $_SESSION['flash_sucesso'] = 'Livro removido do catálogo.';
         } else {
-            $_SESSION['flash_erro'] = 'Não é possível excluir este livro porque existem empréstimos vinculados a ele.';
+            $_SESSION['flash_erro'] = 'Não é possível excluir este livro porque existem empréstimos ativos vinculados a ele.';
         }
 
         $this->redirect('/livros');
