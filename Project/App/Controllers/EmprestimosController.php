@@ -4,12 +4,8 @@ namespace App\Controllers;
 
 require_once '../MinhaFramework/Controllers/action.php';
 require_once '../App/Models/tb_emprestimos.php';
-require_once '../App/Models/tb_usuarios.php';
-require_once '../App/Models/tb_livros.php';
 
 use App\Models\tb_emprestimos;
-use App\Models\tb_livros;
-use App\Models\tb_usuarios;
 use MF\Action;
 
 class EmprestimosController extends Action
@@ -24,13 +20,8 @@ class EmprestimosController extends Action
 
     public function novo()
     {
-        $usuariosModel = new tb_usuarios();
-        $livrosModel = new tb_livros();
-
         $this->view->tituloPagina = 'Registrar Empréstimo';
         $this->view->paginaAtiva = 'novo-emprestimo';
-        $this->view->usuarios = $usuariosModel->listarAtivos();
-        $this->view->livros = $livrosModel->listarDisponiveis();
         $this->view->dataHoje = date('Y-m-d');
         $this->view->dataPrevistaPadrao = date('Y-m-d', strtotime('+7 days'));
         $this->view->sucesso = $_SESSION['flash_sucesso'] ?? null;
@@ -109,10 +100,12 @@ class EmprestimosController extends Action
         }
 
         $idEmprestimo = (int) ($_POST['id_emprestimo'] ?? 0);
+        $origem = trim($_POST['origem'] ?? '');
+        $rotaDestino = ($origem === 'dashboard') ? '/dashboard' : '/emprestimos';
 
         if ($idEmprestimo <= 0) {
             $_SESSION['flash_erro'] = 'Empréstimo inválido para devolução.';
-            $this->redirect('/emprestimos');
+            $this->redirect($rotaDestino);
             exit;
         }
 
@@ -125,7 +118,7 @@ class EmprestimosController extends Action
             $_SESSION['flash_erro'] = 'Não foi possível registrar a devolução deste empréstimo.';
         }
 
-        $this->redirect('/emprestimos');
+        $this->redirect($rotaDestino);
         exit;
     }
 }

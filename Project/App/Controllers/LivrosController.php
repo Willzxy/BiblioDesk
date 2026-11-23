@@ -35,6 +35,23 @@ class LivrosController extends Action
         $this->render('livros.index');
     }
 
+    public function buscarJson()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $termo = trim($_GET['q'] ?? '');
+        if (mb_strlen($termo) < 2) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $livrosModel = new tb_livros();
+        $livros = $livrosModel->buscarRapido($termo, 8);
+
+        echo json_encode($livros, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     public function cadastrar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

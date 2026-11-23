@@ -79,6 +79,46 @@ class tb_livros extends Models
         return $livros;
     }
 
+    public function buscarRapido(string $termo, int $limite = 8): array
+    {
+        $livros = [];
+
+        try {
+            if (!$this->db) {
+                return $livros;
+            }
+
+            $termoLimpo = trim($termo);
+            if (mb_strlen($termoLimpo) < 2) {
+                return $livros;
+            }
+
+            $limiteSeguro = max(1, min(10, $limite));
+            $like = '%' . $termoLimpo . '%';
+
+            $stmt = $this->db->prepare(
+                "SELECT id, codigo_isbn, titulo, autor, categoria, quantidade_total, quantidade_disponivel 
+                 FROM tb_livros 
+                 WHERE titulo LIKE ? OR autor LIKE ? OR codigo_isbn LIKE ? 
+                 ORDER BY titulo ASC 
+                 LIMIT ?"
+            );
+            $stmt->bind_param('sssi', $like, $like, $like, $limiteSeguro);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+
+            if ($resultado) {
+                while ($row = $resultado->fetch_assoc()) {
+                    $livros[] = $row;
+                }
+            }
+        } catch (\Throwable $th) {
+            return $livros;
+        }
+
+        return $livros;
+    }
+
     public function buscarPorId(int $id): ?array
     {
         try {

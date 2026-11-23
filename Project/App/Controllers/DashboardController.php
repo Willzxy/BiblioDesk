@@ -37,6 +37,10 @@ class DashboardController extends Action
             'emprestimos_atrasados' => $emprestimosModel->contarAtrasados()
         ];
         $this->view->pendencias = $emprestimosModel->listarPendencias();
+        $this->view->sucesso = $_SESSION['flash_sucesso'] ?? null;
+        $this->view->erro = $_SESSION['flash_erro'] ?? null;
+
+        unset($_SESSION['flash_sucesso'], $_SESSION['flash_erro']);
 
         $this->render('dashboard.index');
     }

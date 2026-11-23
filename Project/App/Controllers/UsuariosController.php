@@ -35,6 +35,23 @@ class UsuariosController extends Action
         $this->render('usuarios.index');
     }
 
+    public function buscarJson()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $termo = trim($_GET['q'] ?? '');
+        if (mb_strlen($termo) < 2) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $usuariosModel = new tb_usuarios();
+        $usuarios = $usuariosModel->buscarRapido($termo, 8);
+
+        echo json_encode($usuarios, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     public function novo()
     {
         $this->view->tituloPagina = 'Cadastrar Usuário';

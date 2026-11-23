@@ -1,8 +1,6 @@
 <?php $this->layout('topo'); ?>
 
 <?php
-$usuarios = $this->view->usuarios ?? [];
-$livros = $this->view->livros ?? [];
 $dataHoje = $this->view->dataHoje ?? date('Y-m-d');
 $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime('+7 days'));
 ?>
@@ -53,6 +51,51 @@ $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime
         background-color: rgba(0, 0, 0, .06);
         color: var(--text, #111827) !important;
     }
+    .search-dropdown {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 4px);
+        background-color: #FFFFFF;
+        border: 1px solid rgba(0, 0, 0, .16);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .10);
+        z-index: 30;
+        max-height: 270px;
+        overflow-y: auto;
+    }
+    .search-option {
+        width: 100%;
+        text-align: left;
+        padding: .65rem .9rem;
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, .06);
+        background-color: #FFFFFF;
+        transition: background-color .12s ease;
+        cursor: pointer;
+        display: block;
+    }
+    .search-option:last-child {
+        border-bottom: none;
+    }
+    .search-option:hover,
+    .search-option.active {
+        background-color: #F3F4F6;
+    }
+    .selected-item-card {
+        background-color: rgba(0, 0, 0, .04);
+        border: 1px solid rgba(0, 0, 0, .16);
+        border-radius: 8px;
+        padding: .75rem .95rem;
+    }
+    .alert-unavailable-book {
+        background-color: #FFF7ED;
+        border: 1px solid #FDBA74;
+        border-left: 4px solid #C2410C;
+        color: #9A3412;
+        border-radius: 8px;
+        padding: .75rem .95rem;
+    }
 </style>
 
 <section class="max-w-xl mx-auto py-2">
@@ -80,47 +123,146 @@ $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime
             <h2 class="font-brand font-bold text-xl m-0" style="color:var(--text, #111827);">Novo Empréstimo</h2>
         </div>
         <p class="text-sm m-0" style="color:var(--text-soft, #6B7280);">
-            Selecione o leitor e o exemplar disponível para registrar a retirada no balcão.
+            Busque o leitor e o livro pelo nome, autor ou código para registrar a retirada no balcão.
         </p>
     </div>
 
-    <form action="/emprestimos/registrar" method="POST" class="space-y-5">
+    <form id="formEmprestimo" action="/emprestimos/registrar" method="POST" class="space-y-5" novalidate>
+        <input type="hidden" id="id_usuario" name="id_usuario" value="">
+        <input type="hidden" id="id_livro" name="id_livro" value="">
+
         <div>
             <div class="flex items-center justify-between mb-1.5">
-                <label for="id_usuario" class="text-sm font-semibold" style="color:var(--text, #111827);">
+                <label for="buscaUsuario" class="text-sm font-semibold" style="color:var(--text, #111827);">
                     Usuário / Leitor
                 </label>
                 <a href="/usuarios/novo?origem=emprestimo" class="text-xs modern-link">
                     + Novo usuário
                 </a>
             </div>
-            <select id="id_usuario" name="id_usuario" class="form-select modern-field text-sm" required>
-                <option value="">Selecione o usuário...</option>
-                <?php foreach ($usuarios as $usuario): ?>
-                    <option value="<?= (int) $usuario['id'] ?>">
-                        <?= htmlspecialchars($usuario['nome']) ?> — <?= htmlspecialchars($usuario['documento']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+
+            <div id="boxBuscaUsuario" class="relative">
+                <div class="relative flex items-center">
+                    <i class="bi bi-search text-slate-400 text-sm" style="position:absolute; left:.85rem; pointer-events:none;"></i>
+                    <input
+                        type="text"
+                        id="buscaUsuario"
+                        class="form-control modern-field text-sm"
+                        style="padding-left:2.3rem !important; padding-right:2.3rem !important;"
+                        placeholder="Digite nome ou documento (mín. 2 caracteres)..."
+                        autocomplete="off"
+                    >
+                    <span id="spinnerUsuario" class="hidden text-slate-400" style="position:absolute; right:.85rem;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </div>
+
+                <div id="listaUsuarios" class="search-dropdown hidden"></div>
+            </div>
+
+            <div id="cardUsuarioSelecionado" class="selected-item-card hidden">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span id="selUsuarioNome" class="font-semibold text-sm text-slate-900 truncate"></span>
+                        </div>
+                        <div class="text-xs text-slate-600 mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5">
+                            <span>Doc: <strong id="selUsuarioDoc" class="font-mono font-medium"></strong></span>
+                            <span>Tel: <span id="selUsuarioTel"></span></span>
+                        </div>
+                        <div id="selUsuarioObs" class="text-xs text-slate-500 mt-0.5 hidden"></div>
+                    </div>
+                    <button
+                        type="button"
+                        id="btnTrocarUsuario"
+                        class="btn btn-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold px-2.5 py-1 rounded shrink-0"
+                    >
+                        Trocar
+                    </button>
+                </div>
+            </div>
+
+            <p id="erroUsuario" class="text-xs text-red-600 font-medium mt-1.5 mb-0 hidden">
+                Selecione um usuário válido na lista de busca antes de confirmar.
+            </p>
         </div>
 
         <div>
             <div class="flex items-center justify-between mb-1.5">
-                <label for="id_livro" class="text-sm font-semibold" style="color:var(--text, #111827);">
-                    Livro Disponível
+                <label for="buscaLivro" class="text-sm font-semibold" style="color:var(--text, #111827);">
+                    Livro
                 </label>
                 <a href="/livros" class="text-xs modern-link">
                     + Ver catálogo
                 </a>
             </div>
-            <select id="id_livro" name="id_livro" class="form-select modern-field text-sm" required>
-                <option value="">Selecione o livro...</option>
-                <?php foreach ($livros as $livro): ?>
-                    <option value="<?= (int) $livro['id'] ?>">
-                        <?= htmlspecialchars($livro['titulo']) ?> (<?= htmlspecialchars($livro['autor']) ?>) — <?= (int) $livro['quantidade_disponivel'] ?> disp.
-                    </option>
-                <?php endforeach; ?>
-            </select>
+
+            <div id="boxBuscaLivro" class="relative">
+                <div class="relative flex items-center">
+                    <i class="bi bi-book text-slate-400 text-sm" style="position:absolute; left:.85rem; pointer-events:none;"></i>
+                    <input
+                        type="text"
+                        id="buscaLivro"
+                        class="form-control modern-field text-sm"
+                        style="padding-left:2.3rem !important; padding-right:2.3rem !important;"
+                        placeholder="Digite título, autor ou ISBN (mín. 2 caracteres)..."
+                        autocomplete="off"
+                    >
+                    <span id="spinnerLivro" class="hidden text-slate-400" style="position:absolute; right:.85rem;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </div>
+
+                <div id="listaLivros" class="search-dropdown hidden"></div>
+            </div>
+
+            <div id="cardLivroSelecionado" class="selected-item-card hidden">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span id="selLivroTitulo" class="font-semibold text-sm text-slate-900 truncate"></span>
+                        </div>
+                        <div class="text-xs text-slate-600 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                            <span id="selLivroAutor"></span>
+                            <span>ISBN: <strong id="selLivroIsbn" class="font-mono font-medium"></strong></span>
+                            <span id="selLivroDisp" class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800"></span>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        id="btnTrocarLivro"
+                        class="btn btn-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 text-xs font-semibold px-2.5 py-1 rounded shrink-0"
+                    >
+                        Trocar
+                    </button>
+                </div>
+            </div>
+
+            <div id="avisoLivroIndisponivel" class="alert-unavailable-book mt-2 hidden" role="alert">
+                <div class="flex items-start justify-between gap-2.5">
+                    <div class="flex items-start gap-2">
+                        <i class="bi bi-exclamation-triangle-fill text-base mt-0.5 shrink-0"></i>
+                        <div class="text-xs leading-relaxed">
+                            <strong class="block text-sm font-bold mb-0.5">Livro indisponível para empréstimo</strong>
+                            <span id="textoLivroIndisponivel"></span>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        id="btnFecharAvisoLivro"
+                        class="text-xs font-semibold underline shrink-0"
+                        style="color:#9A3412;"
+                    >
+                        Limpar
+                    </button>
+                </div>
+            </div>
+
+            <p id="erroLivro" class="text-xs text-red-600 font-medium mt-1.5 mb-0 hidden">
+                Selecione um livro disponível na lista de busca antes de confirmar.
+            </p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -167,5 +309,381 @@ $dataPrevistaPadrao = $this->view->dataPrevistaPadrao ?? date('Y-m-d', strtotime
         </div>
     </form>
 </section>
+
+<script>
+    (function () {
+        const form = document.getElementById('formEmprestimo');
+
+        const idUsuarioInput = document.getElementById('id_usuario');
+        const boxBuscaUsuario = document.getElementById('boxBuscaUsuario');
+        const inputBuscaUsuario = document.getElementById('buscaUsuario');
+        const spinnerUsuario = document.getElementById('spinnerUsuario');
+        const listaUsuarios = document.getElementById('listaUsuarios');
+        const cardUsuarioSelecionado = document.getElementById('cardUsuarioSelecionado');
+        const selUsuarioNome = document.getElementById('selUsuarioNome');
+        const selUsuarioDoc = document.getElementById('selUsuarioDoc');
+        const selUsuarioTel = document.getElementById('selUsuarioTel');
+        const selUsuarioObs = document.getElementById('selUsuarioObs');
+        const btnTrocarUsuario = document.getElementById('btnTrocarUsuario');
+        const erroUsuario = document.getElementById('erroUsuario');
+
+        const idLivroInput = document.getElementById('id_livro');
+        const boxBuscaLivro = document.getElementById('boxBuscaLivro');
+        const inputBuscaLivro = document.getElementById('buscaLivro');
+        const spinnerLivro = document.getElementById('spinnerLivro');
+        const listaLivros = document.getElementById('listaLivros');
+        const cardLivroSelecionado = document.getElementById('cardLivroSelecionado');
+        const selLivroTitulo = document.getElementById('selLivroTitulo');
+        const selLivroAutor = document.getElementById('selLivroAutor');
+        const selLivroIsbn = document.getElementById('selLivroIsbn');
+        const selLivroDisp = document.getElementById('selLivroDisp');
+        const btnTrocarLivro = document.getElementById('btnTrocarLivro');
+        const avisoLivroIndisponivel = document.getElementById('avisoLivroIndisponivel');
+        const textoLivroIndisponivel = document.getElementById('textoLivroIndisponivel');
+        const btnFecharAvisoLivro = document.getElementById('btnFecharAvisoLivro');
+        const erroLivro = document.getElementById('erroLivro');
+        const inputDataEmprestimo = document.getElementById('data_emprestimo');
+
+        function criarBuscadorDinamico(config) {
+            const cache = new Map();
+            let timer = null;
+            let controller = null;
+            let resultados = [];
+            let indiceFocado = -1;
+
+            function fechar() {
+                config.lista.classList.add('hidden');
+                config.lista.innerHTML = '';
+                resultados = [];
+                indiceFocado = -1;
+            }
+
+            function atualizarDestaque() {
+                const opcoes = config.lista.querySelectorAll('.search-option');
+                opcoes.forEach((el, idx) => {
+                    el.classList.toggle('active', idx === indiceFocado);
+                });
+            }
+
+            function renderizar(itens) {
+                config.lista.innerHTML = '';
+                resultados = itens;
+                indiceFocado = -1;
+
+                if (!itens.length) {
+                    const vazio = document.createElement('div');
+                    vazio.className = 'px-4 py-3 text-xs text-slate-500';
+                    vazio.textContent = config.textoVazio;
+                    config.lista.appendChild(vazio);
+                    config.lista.classList.remove('hidden');
+                    return;
+                }
+
+                itens.forEach((item) => {
+                    const btn = config.criarOpcao(item);
+                    btn.addEventListener('click', () => config.aoSelecionar(item, fechar));
+                    config.lista.appendChild(btn);
+                });
+
+                config.lista.classList.remove('hidden');
+            }
+
+            async function consultar(termo) {
+                const chave = termo.toLowerCase();
+
+                if (cache.has(chave)) {
+                    renderizar(cache.get(chave));
+                    return;
+                }
+
+                if (controller) {
+                    controller.abort();
+                }
+
+                controller = new AbortController();
+                config.spinner.classList.remove('hidden');
+
+                try {
+                    const resposta = await fetch(config.endpoint + encodeURIComponent(termo), {
+                        signal: controller.signal,
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    const tipo = resposta.headers.get('content-type') || '';
+                    if (!resposta.ok || !tipo.includes('application/json')) {
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    const dados = await resposta.json();
+                    if (cache.size >= 30) {
+                        const primeiraChave = cache.keys().next().value;
+                        cache.delete(primeiraChave);
+                    }
+                    cache.set(chave, dados);
+                    renderizar(dados);
+                } catch (erro) {
+                    if (erro.name !== 'AbortError') {
+                        fechar();
+                    }
+                } finally {
+                    config.spinner.classList.add('hidden');
+                }
+            }
+
+            config.input.addEventListener('input', () => {
+                const termo = config.input.value.trim();
+                if (config.aoDigitar) {
+                    config.aoDigitar();
+                }
+                clearTimeout(timer);
+
+                if (termo.length < 2) {
+                    if (controller) {
+                        controller.abort();
+                    }
+                    config.spinner.classList.add('hidden');
+                    fechar();
+                    return;
+                }
+
+                timer = setTimeout(() => {
+                    consultar(termo);
+                }, 350);
+            });
+
+            config.input.addEventListener('keydown', (e) => {
+                if (config.lista.classList.contains('hidden') || !resultados.length) {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    indiceFocado = (indiceFocado + 1) % resultados.length;
+                    atualizarDestaque();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    indiceFocado = (indiceFocado - 1 + resultados.length) % resultados.length;
+                    atualizarDestaque();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (indiceFocado >= 0 && resultados[indiceFocado]) {
+                        config.aoSelecionar(resultados[indiceFocado], fechar);
+                    } else if (resultados.length === 1) {
+                        config.aoSelecionar(resultados[0], fechar);
+                    }
+                } else if (e.key === 'Escape') {
+                    fechar();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!config.container.contains(e.target)) {
+                    fechar();
+                }
+            });
+
+            return { fechar };
+        }
+
+        const buscadorUsuario = criarBuscadorDinamico({
+            container: boxBuscaUsuario,
+            input: inputBuscaUsuario,
+            spinner: spinnerUsuario,
+            lista: listaUsuarios,
+            endpoint: '/usuarios/buscar-json?q=',
+            textoVazio: 'Nenhum usuário ativo encontrado para essa busca.',
+            aoDigitar() {
+                erroUsuario.classList.add('hidden');
+            },
+            criarOpcao(u) {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'search-option';
+
+                const linhaTopo = document.createElement('div');
+                linhaTopo.className = 'flex items-center justify-between gap-2';
+
+                const nomeEl = document.createElement('span');
+                nomeEl.className = 'font-semibold text-sm text-slate-900';
+                nomeEl.textContent = u.nome;
+
+                const docEl = document.createElement('span');
+                docEl.className = 'font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded';
+                docEl.textContent = u.documento;
+
+                linhaTopo.appendChild(nomeEl);
+                linhaTopo.appendChild(docEl);
+                item.appendChild(linhaTopo);
+
+                const detalhes = [];
+                if (u.telefone) detalhes.push(u.telefone);
+                if (u.observacao) detalhes.push(u.observacao);
+
+                if (detalhes.length) {
+                    const subEl = document.createElement('div');
+                    subEl.className = 'text-xs text-slate-500 mt-0.5 truncate';
+                    subEl.textContent = detalhes.join(' • ');
+                    item.appendChild(subEl);
+                }
+
+                return item;
+            },
+            aoSelecionar(usuario, fechar) {
+                idUsuarioInput.value = usuario.id;
+                selUsuarioNome.textContent = usuario.nome;
+                selUsuarioDoc.textContent = usuario.documento;
+                selUsuarioTel.textContent = usuario.telefone || '-';
+
+                if (usuario.observacao) {
+                    selUsuarioObs.textContent = usuario.observacao;
+                    selUsuarioObs.classList.remove('hidden');
+                } else {
+                    selUsuarioObs.textContent = '';
+                    selUsuarioObs.classList.add('hidden');
+                }
+
+                boxBuscaUsuario.classList.add('hidden');
+                cardUsuarioSelecionado.classList.remove('hidden');
+                erroUsuario.classList.add('hidden');
+                fechar();
+                if (!idLivroInput.value) {
+                    inputBuscaLivro.focus();
+                }
+            }
+        });
+
+        const buscadorLivro = criarBuscadorDinamico({
+            container: boxBuscaLivro,
+            input: inputBuscaLivro,
+            spinner: spinnerLivro,
+            lista: listaLivros,
+            endpoint: '/livros/buscar-json?q=',
+            textoVazio: 'Nenhum livro encontrado no catálogo para essa busca.',
+            aoDigitar() {
+                erroLivro.classList.add('hidden');
+                avisoLivroIndisponivel.classList.add('hidden');
+            },
+            criarOpcao(l) {
+                const disponivel = Number(l.quantidade_disponivel || 0);
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'search-option';
+
+                const linhaTopo = document.createElement('div');
+                linhaTopo.className = 'flex items-center justify-between gap-2';
+
+                const tituloEl = document.createElement('span');
+                tituloEl.className = 'font-semibold text-sm text-slate-900 truncate';
+                tituloEl.textContent = l.titulo;
+
+                const badgeEl = document.createElement('span');
+                if (disponivel > 0) {
+                    badgeEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 shrink-0';
+                    badgeEl.textContent = disponivel + ' disp.';
+                } else {
+                    badgeEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded bg-orange-100 text-orange-800 shrink-0';
+                    badgeEl.textContent = 'Indisponível';
+                }
+
+                linhaTopo.appendChild(tituloEl);
+                linhaTopo.appendChild(badgeEl);
+                item.appendChild(linhaTopo);
+
+                const subEl = document.createElement('div');
+                subEl.className = 'text-xs text-slate-500 mt-0.5 flex items-center justify-between gap-2';
+
+                const autorCat = document.createElement('span');
+                autorCat.className = 'truncate';
+                autorCat.textContent = l.autor + (l.categoria ? ' • ' + l.categoria : '');
+
+                const isbnEl = document.createElement('span');
+                isbnEl.className = 'font-mono text-[11px] text-slate-500 shrink-0';
+                isbnEl.textContent = l.codigo_isbn;
+
+                subEl.appendChild(autorCat);
+                subEl.appendChild(isbnEl);
+                item.appendChild(subEl);
+
+                return item;
+            },
+            aoSelecionar(livro, fechar) {
+                const disponivel = Number(livro.quantidade_disponivel || 0);
+                const total = Number(livro.quantidade_total || 0);
+
+                if (disponivel <= 0) {
+                    idLivroInput.value = '';
+                    erroLivro.classList.add('hidden');
+                    textoLivroIndisponivel.textContent = 'O exemplar "' + livro.titulo + '" (ISBN ' + livro.codigo_isbn + ') está esgotado no momento (0 de ' + total + ' disponíveis). Escolha outro título.';
+                    avisoLivroIndisponivel.classList.remove('hidden');
+                    fechar();
+                    inputBuscaLivro.focus();
+                    return;
+                }
+
+                avisoLivroIndisponivel.classList.add('hidden');
+                erroLivro.classList.add('hidden');
+                idLivroInput.value = livro.id;
+                selLivroTitulo.textContent = livro.titulo;
+                selLivroAutor.textContent = livro.autor;
+                selLivroIsbn.textContent = livro.codigo_isbn;
+                selLivroDisp.textContent = disponivel + ' de ' + total + ' disp.';
+
+                boxBuscaLivro.classList.add('hidden');
+                cardLivroSelecionado.classList.remove('hidden');
+                fechar();
+                inputDataEmprestimo.focus();
+            }
+        });
+
+        btnTrocarUsuario.addEventListener('click', () => {
+            idUsuarioInput.value = '';
+            inputBuscaUsuario.value = '';
+            cardUsuarioSelecionado.classList.add('hidden');
+            boxBuscaUsuario.classList.remove('hidden');
+            buscadorUsuario.fechar();
+            inputBuscaUsuario.focus();
+        });
+
+        btnTrocarLivro.addEventListener('click', () => {
+            idLivroInput.value = '';
+            inputBuscaLivro.value = '';
+            cardLivroSelecionado.classList.add('hidden');
+            avisoLivroIndisponivel.classList.add('hidden');
+            boxBuscaLivro.classList.remove('hidden');
+            buscadorLivro.fechar();
+            inputBuscaLivro.focus();
+        });
+
+        btnFecharAvisoLivro.addEventListener('click', () => {
+            avisoLivroIndisponivel.classList.add('hidden');
+            inputBuscaLivro.value = '';
+            inputBuscaLivro.focus();
+        });
+
+        form.addEventListener('submit', (e) => {
+            if (!idUsuarioInput.value) {
+                e.preventDefault();
+                erroUsuario.classList.remove('hidden');
+                inputBuscaUsuario.focus();
+                return;
+            }
+
+            if (!idLivroInput.value) {
+                e.preventDefault();
+                if (avisoLivroIndisponivel.classList.contains('hidden')) {
+                    erroLivro.classList.remove('hidden');
+                }
+                inputBuscaLivro.focus();
+                return;
+            }
+
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                form.reportValidity();
+            }
+        });
+    })();
+</script>
 
 <?php $this->layout('rodape'); ?>

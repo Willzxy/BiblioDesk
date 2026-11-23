@@ -52,6 +52,32 @@ INSERT INTO tb_livros (codigo_isbn, titulo, autor, categoria, quantidade_total, 
 ('978-8535909555', 'A Revolução dos Bichos', 'George Orwell', 'Ficção Política', 3, 3),
 ('978-8595084742', 'O Hobbit', 'J.R.R. Tolkien', 'Fantasia', 2, 2);
 
+INSERT INTO tb_livros (codigo_isbn, titulo, autor, categoria, quantidade_total, quantidade_disponivel) VALUES
+('978-8535911121', 'Memórias Póstumas de Brás Cubas', 'Machado de Assis', 'Literatura Brasileira', 3, 0),
+('978-8535911671', 'Quincas Borba', 'Machado de Assis', 'Literatura Brasileira', 2, 2),
+('978-8535914412', 'O Alienista', 'Machado de Assis', 'Literatura Brasileira', 4, 3),
+('978-8550800653', 'O Codificador Limpo', 'Robert C. Martin', 'Tecnologia', 2, 2),
+('978-8550804606', 'Desenvolvimento Ágil Limpo', 'Robert C. Martin', 'Tecnologia', 2, 1),
+('978-8582603710', 'O Programador Pragmático', 'Andrew Hunt e David Thomas', 'Tecnologia', 3, 0),
+('978-8576081739', 'Use a Cabeça! Padrões de Projetos', 'Eric Freeman', 'Tecnologia', 4, 3),
+('978-8573076103', 'Padrões de Projetos: Soluções Reutilizáveis', 'Erich Gamma', 'Tecnologia', 2, 2),
+('978-8575227268', 'Estruturas de Dados e Algoritmos com JavaScript', 'Loiane Groner', 'Tecnologia', 3, 3),
+('978-8595086357', 'O Senhor dos Anéis: A Sociedade do Anel', 'J.R.R. Tolkien', 'Fantasia', 3, 0),
+('978-8595086364', 'O Senhor dos Anéis: As Duas Torres', 'J.R.R. Tolkien', 'Fantasia', 3, 2),
+('978-8595086371', 'O Senhor dos Anéis: O Retorno do Rei', 'J.R.R. Tolkien', 'Fantasia', 3, 3),
+('978-8532530790', 'Harry Potter e a Câmara Secreta', 'J.K. Rowling', 'Fantasia', 4, 4),
+('978-8532530806', 'Harry Potter e o Prisioneiro de Azkaban', 'J.K. Rowling', 'Fantasia', 4, 2),
+('978-8576573135', 'Duna', 'Frank Herbert', 'Ficção Científica', 2, 0),
+('978-8576570486', 'Fundação', 'Isaac Asimov', 'Ficção Científica', 3, 3),
+('978-8576572008', 'Eu, Robô', 'Isaac Asimov', 'Ficção Científica', 2, 1),
+('978-8595081536', 'E Não Sobrou Nenhum', 'Agatha Christie', 'Suspense', 3, 3),
+('978-8595080638', 'Assassinato no Expresso do Oriente', 'Agatha Christie', 'Suspense', 2, 2),
+('978-8581050485', 'O Iluminado', 'Stephen King', 'Terror', 2, 1),
+('978-8535902778', 'Grande Sertão: Veredas', 'João Guimarães Rosa', 'Literatura Brasileira', 2, 2),
+('978-8535914863', 'Vidas Secas', 'Graciliano Ramos', 'Literatura Brasileira', 3, 3),
+('978-8535922837', 'Rápido e Devagar: Duas Formas de Pensar', 'Daniel Kahneman', 'Psicologia', 3, 2),
+('978-8543104331', 'Mindset: A Nova Psicologia do Sucesso', 'Carol S. Dweck', 'Desenvolvimento Pessoal', 3, 3);
+
 INSERT INTO tb_usuarios (nome, documento, telefone, observacao, ativo) VALUES
 ('Mariana Oliveira', '123.456.789-01', '(11) 99911-2233', 'Estudante de Engenharia', TRUE),
 ('Lucas Mendes', '234.567.890-12', '(11) 99822-3344', NULL, TRUE),

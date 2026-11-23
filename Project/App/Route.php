@@ -45,6 +45,13 @@ class Route extends BootStrap
             'middleware' => 'AuthMiddleware'
         );
 
+        $routes['livros_buscar_json'] = array(
+            'route' => '/livros/buscar-json',
+            'controller' => 'LivrosController',
+            'action' => 'buscarJson',
+            'middleware' => 'AuthMiddleware'
+        );
+
         $routes['livros_cadastrar'] = array(
             'route' => '/livros/cadastrar',
             'controller' => 'LivrosController',
@@ -70,6 +77,13 @@ class Route extends BootStrap
             'route' => '/usuarios',
             'controller' => 'UsuariosController',
             'action' => 'index',
+            'middleware' => 'AuthMiddleware'
+        );
+
+        $routes['usuarios_buscar_json'] = array(
+            'route' => '/usuarios/buscar-json',
+            'controller' => 'UsuariosController',
+            'action' => 'buscarJson',
             'middleware' => 'AuthMiddleware'
         );
 

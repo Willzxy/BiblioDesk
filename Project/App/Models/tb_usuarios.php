@@ -85,6 +85,46 @@ class tb_usuarios extends Models
         return $usuarios;
     }
 
+    public function buscarRapido(string $termo, int $limite = 8): array
+    {
+        $usuarios = [];
+
+        try {
+            if (!$this->db) {
+                return $usuarios;
+            }
+
+            $termoLimpo = trim($termo);
+            if (mb_strlen($termoLimpo) < 2) {
+                return $usuarios;
+            }
+
+            $limiteSeguro = max(1, min(10, $limite));
+            $like = '%' . $termoLimpo . '%';
+
+            $stmt = $this->db->prepare(
+                "SELECT id, nome, documento, telefone, observacao 
+                 FROM tb_usuarios 
+                 WHERE ativo = TRUE AND (nome LIKE ? OR documento LIKE ?) 
+                 ORDER BY nome ASC 
+                 LIMIT ?"
+            );
+            $stmt->bind_param('ssi', $like, $like, $limiteSeguro);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+
+            if ($resultado) {
+                while ($row = $resultado->fetch_assoc()) {
+                    $usuarios[] = $row;
+                }
+            }
+        } catch (\Throwable $th) {
+            return $usuarios;
+        }
+
+        return $usuarios;
+    }
+
     public function buscarPorId(int $id): ?array
     {
         try {
